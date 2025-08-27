@@ -1,0 +1,7 @@
+#map {
+  height: 50vh;
+}
+
+.hide-layer :global(.leaflet-overlay-pane) {
+  display: none;
+}

@@ -79,7 +79,7 @@
   {/if}
   {#if !getUser()}
     <a
-      href="https://github.com/login/oauth/authorize?client_id=Ov23lieVbXnlw4xgyzT9&scope=public_repo,user&redirect_uri=http://localhost:4567/github-callback?destination=http://localhost:5173"
+      href="https://github.com/login/oauth/authorize?client_id=Ov23lieVbXnlw4xgyzT9&scope=public_repo,user&redirect_uri=https://auth.abfab.dev/github-callback?destination=http://localhost:5173"
     >
       Login with GitHub
     </a>

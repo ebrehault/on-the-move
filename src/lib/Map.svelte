@@ -1,7 +1,24 @@
 <script lang="ts">
-  import { circleMarker, geoJSON, type GeoJSON, latLngBounds, type Map, map, tileLayer } from 'leaflet';
+  import {
+    circleMarker,
+    geoJSON,
+    type GeoJSON,
+    LatLng,
+    latLngBounds,
+    type LeafletEvent,
+    type Map,
+    map,
+    tileLayer,
+  } from 'leaflet';
   import { onMount } from 'svelte';
-  import { getGeometry, getStages } from './store.svelte';
+  import {
+    getCurrentCoordinates,
+    getGeometry,
+    getStages,
+    getTrip,
+    getUser,
+    setCurrentCoordinates,
+  } from './store.svelte';
 
   let { clickStage } = $props();
 
@@ -9,6 +26,7 @@
   let layer: GeoJSON | undefined;
 
   let hideLayer = $state(false);
+  let currentLocationMarker: any;
 
   onMount(() => {
     mapObj = map('map');
@@ -19,18 +37,44 @@
       maxZoom: 20,
       minZoom: 2,
     }).addTo(mapObj);
+    mapObj.on('click', onMapClick);
   });
 
   $effect(() => {
-    const geometry = getGeometry();
-    if (geometry.features.length === 0) {
+    const current = getCurrentCoordinates();
+    if (currentLocationMarker) {
+      mapObj.removeLayer(currentLocationMarker);
+    }
+    if (current) {
+      currentLocationMarker = circleMarker(current, {
+        radius: 5,
+        fillOpacity: 0.5,
+      });
+      currentLocationMarker.addTo(mapObj);
+    }
+  });
+
+  function onMapClick(e: LeafletEvent) {
+    if (getUser()) {
+      const coordinates = (e as any).latlng as LatLng;
+      setCurrentCoordinates(coordinates);
+    }
+  }
+
+  $effect(() => {
+    if (getTrip().stages.length === 0) {
       mapObj.setView([0, 0], 3);
       return;
     }
-    layer = geoJSON(geometry).addTo(mapObj);
-    mapObj.fitBounds(layer.getBounds());
+    const geometry = getGeometry();
+    if (geometry.features.length > 0) {
+      layer = geoJSON(geometry).addTo(mapObj);
+      mapObj.fitBounds(layer.getBounds());
+    } else {
+      mapObj.setView(getStages()[0].coordinates, 10);
+    }
     getStages().forEach((stage) => {
-      const marker = circleMarker([stage.coordinates[1], stage.coordinates[0]], {
+      const marker = circleMarker(stage.coordinates, {
         radius: 5,
         fillOpacity: 0.5,
       });

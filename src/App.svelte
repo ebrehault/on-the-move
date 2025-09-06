@@ -10,9 +10,10 @@
     getUser,
     loadTrip,
     setPage,
+    setTripId,
     setUser,
   } from './lib/store.svelte';
-  import { ACCESS_TOKEN_STORAGE_KEY, createRepository, getCurrentUser, setTripData } from './lib/github';
+  import { ACCESS_TOKEN_STORAGE_KEY, createRepository, getCurrentUser, storeTripData } from './lib/github';
   import Home from './lib/Home.svelte';
 
   onMount(() => {
@@ -45,13 +46,13 @@
     if (!user) {
       return;
     }
-    setTripData('ebrehault', 'trip1', {
+    storeTripData('ebrehault', 'trip1', {
       title: 'My first trip CHANGED',
       stages: [
-        { title: 'Departure', coordinates: [-0.09, 51.505], description: 'We left very early.' },
+        { title: 'Departure', coordinates: { lng: -0.09, lat: 51.505 }, description: 'We left very early.' },
         {
           title: 'Arrival',
-          coordinates: [-0.07, 51.515],
+          coordinates: { lng: -0.07, lat: 51.515 },
           description: 'The travel was amazing.',
           pictures: ['picture1.jpg'],
         },

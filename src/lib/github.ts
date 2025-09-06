@@ -41,11 +41,11 @@ export function createTrip(user: string, tripName: string) {
   const tripId = encodeURIComponent(tripName);
   return hasRepository(user)
     .then((hasRepo) => (hasRepo ? true : createRepository()))
-    .then(() => setTripData(user, tripId, { title: tripName, stages: [] }))
+    .then(() => storeTripData(user, tripId, { title: tripName, stages: [] }))
     .then(() => tripId);
 }
 
-export function setTripData(user: string, tripId: string, tripData: any) {
+export function storeTripData(user: string, tripId: string, tripData: any) {
   const data: any = { message: 'change trip', content: btoa(JSON.stringify(tripData)) };
   return fetchAPI(`/repos/${user}/on-the-move-data/contents/${tripId}/trip.json`).then((res) => {
     if (res.status !== '404') {

@@ -1,13 +1,15 @@
 import type { Feature, FeatureCollection } from 'geojson';
 import { getTripData } from './github';
+import type { LatLng } from 'leaflet';
 
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token';
 
 export interface Stage {
-  coordinates: [number, number];
+  coordinates: LatLng;
   title: string;
   pictures?: string[];
   description?: string;
+  date: string;
 }
 
 export interface Trip {
@@ -22,6 +24,13 @@ export function setUser(_user: string) {
 export function getUser(): string {
   return user;
 }
+let tripId: string = $state('');
+export function setTripId(_tripId: string) {
+  tripId = _tripId;
+}
+export function getTripId(): string {
+  return tripId;
+}
 
 export enum PAGE {
   Home,
@@ -35,6 +44,14 @@ export function getPage(): PAGE {
   return page;
 }
 
+let currentCoordinates: LatLng | undefined = $state(undefined);
+export function setCurrentCoordinates(_currentCoordinates: LatLng | undefined) {
+  currentCoordinates = _currentCoordinates;
+}
+export function getCurrentCoordinates(): LatLng | undefined {
+  return currentCoordinates;
+}
+
 let trip: Trip = $state({
   title: '',
   stages: [],
@@ -42,6 +59,12 @@ let trip: Trip = $state({
 
 export function setTrip(_trip: Trip) {
   trip = _trip;
+}
+export function getTrip(): Trip {
+  return trip;
+}
+export function addTripStage(stage: Stage) {
+  trip = { ...trip, stages: [...trip.stages, stage] };
 }
 
 let geometry: FeatureCollection = $derived.by(() => {
@@ -52,7 +75,10 @@ let geometry: FeatureCollection = $derived.by(() => {
         properties: {},
         geometry: {
           type: 'LineString',
-          coordinates: [trip.stages[index - 1].coordinates, stage.coordinates],
+          coordinates: [
+            [trip.stages[index - 1].coordinates.lng, trip.stages[index - 1].coordinates.lat],
+            [stage.coordinates.lng, stage.coordinates.lat],
+          ],
         },
       };
       all.push(line);
@@ -71,5 +97,6 @@ export function getStages(): Stage[] {
 }
 
 export function loadTrip(user: string, tripId: string) {
+  setTripId(tripId);
   getTripData(user, tripId).then((trip: Trip) => setTrip(trip));
 }

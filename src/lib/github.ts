@@ -5,7 +5,7 @@ export function getCurrentUser(): Promise<string> {
   return fetchAPI('/user').then((data) => data.login as string);
 }
 
-export function getTripData(user: string, tripId: string) {
+export function loadTripData(user: string, tripId: string) {
   if (!getToken()) {
     return fetch(`https://raw.githubusercontent.com/${user}/on-the-move-data/refs/heads/main/${tripId}/trip.json`).then(
       (res) => res.json(),
@@ -13,7 +13,7 @@ export function getTripData(user: string, tripId: string) {
   } else {
     // raw urls have cache, so when authenticated, use the API
     return fetchAPI(`/repos/${user}/on-the-move-data/contents/${tripId}/trip.json`).then((res) =>
-      JSON.parse(atob(res.content)),
+      res.status !== '404' ? JSON.parse(atob(res.content)) : {},
     );
   }
 }
@@ -53,6 +53,15 @@ export function storeTripData(user: string, tripId: string, tripData: any) {
     }
     return fetchAPI(`/repos/${user}/on-the-move-data/contents/${tripId}/trip.json`, 'PUT', data);
   });
+}
+
+export function getPhotoUrl(user: string, tripId: string, filename: string) {
+  return `https://raw.githubusercontent.com/${user}/on-the-move-data/refs/heads/main/${tripId}/${filename}`;
+}
+
+export function storePhoto(user: string, tripId: string, filename: string, b64image: string) {
+  const data: any = { message: `add ${filename}`, content: b64image };
+  return fetchAPI(`/repos/${user}/on-the-move-data/contents/${tripId}/${filename}`, 'PUT', data);
 }
 
 function fetchAPI<T = any>(path: string, method = 'GET', body?: any): Promise<T> {

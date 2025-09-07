@@ -2,26 +2,40 @@
   import { onMount } from 'svelte';
   import Map from './lib/Map.svelte';
   import Stages from './lib/Stages.svelte';
+  import StageDetail from './lib/StageDetail.svelte';
   import {
     PAGE,
-    type Stage,
     TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
     getPage,
+    getStage,
+    getTripId,
     getUser,
     loadTrip,
     setPage,
-    setTripId,
+    setStage,
+    setTrip,
     setUser,
   } from './lib/store.svelte';
-  import { ACCESS_TOKEN_STORAGE_KEY, createRepository, getCurrentUser, storeTripData } from './lib/github';
+  import { ACCESS_TOKEN_STORAGE_KEY, getCurrentUser } from './lib/github';
   import Home from './lib/Home.svelte';
 
-  onMount(() => {
+  function parseHash() {
     const params = location.hash.split('/');
-    if (params.length === 3) {
+    if (params.length >= 3) {
       loadTrip(params[1], params[2]);
-      setPage(PAGE.Trip);
+      if (params.length === 3) {
+        setPage(PAGE.Trip);
+      } else {
+        const stage = parseInt(params[3], 10);
+        setStage(stage);
+      }
+    } else {
+      setPage(PAGE.Home);
     }
+  }
+
+  onMount(() => {
+    parseHash();
     const url = new URL(location.href);
     const token = url.searchParams.get(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER);
     if (token) {
@@ -32,33 +46,22 @@
     }
 
     getCurrentUser().then((user) => setUser(user));
-  });
-  function createRepo() {
-    const user = getUser();
-    if (!user) {
-      return;
-    }
-    createRepository().then(() => console.log('success'));
-  }
 
-  function testChangeData() {
+    window.onhashchange = parseHash;
+  });
+
+  $effect(() => {
     const user = getUser();
-    if (!user) {
-      return;
+    const trip = getTripId();
+    const stage = getStage();
+    if (user && trip) {
+      if (stage === -1) {
+        location.hash = `#/${user}/${trip}`;
+      } else {
+        location.hash = `#/${user}/${trip}/${stage}`;
+      }
     }
-    storeTripData('ebrehault', 'trip1', {
-      title: 'My first trip CHANGED',
-      stages: [
-        { title: 'Departure', coordinates: { lng: -0.09, lat: 51.505 }, description: 'We left very early.' },
-        {
-          title: 'Arrival',
-          coordinates: { lng: -0.07, lat: 51.515 },
-          description: 'The travel was amazing.',
-          pictures: ['picture1.jpg'],
-        },
-      ],
-    }).then(() => console.log('success'));
-  }
+  });
 </script>
 
 <svelte:head>
@@ -73,9 +76,14 @@
 <main>
   {#if getPage() === PAGE.Home}
     <Home />
-  {:else if getPage() === PAGE.Trip}
-    <Map clickStage={(stage: Stage) => console.log(stage.title)} />
-    <Stages />
+  {:else}
+    <Map />
+    {#if getPage() === PAGE.Trip}
+      <Stages />
+    {/if}
+    {#if getPage() === PAGE.Stage}
+      <StageDetail />
+    {/if}
   {/if}
   {#if !getUser()}
     <a
@@ -85,7 +93,5 @@
     </a>
   {:else}
     Logged as {getUser()}
-    <button onclick={createRepo}>Create repo</button>
-    <button onclick={testChangeData}>Change data</button>
   {/if}
 </main>

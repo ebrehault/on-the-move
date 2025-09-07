@@ -18,7 +18,6 @@
 
   function showTrip(trip: string) {
     loadTrip(getUser(), trip);
-    location.hash = `#/${getUser()}/${trip}`;
     setPage(PAGE.Trip);
   }
 

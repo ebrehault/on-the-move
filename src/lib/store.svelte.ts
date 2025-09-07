@@ -1,5 +1,5 @@
 import type { Feature, FeatureCollection } from 'geojson';
-import { getTripData } from './github';
+import { loadTripData } from './github';
 import type { LatLng } from 'leaflet';
 
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token';
@@ -35,6 +35,7 @@ export function getTripId(): string {
 export enum PAGE {
   Home,
   Trip,
+  Stage,
 }
 let page: PAGE = $state(PAGE.Home);
 export function setPage(_page: PAGE) {
@@ -42,6 +43,15 @@ export function setPage(_page: PAGE) {
 }
 export function getPage(): PAGE {
   return page;
+}
+
+let stage: number = $state(-1);
+export function setStage(_stage: number) {
+  stage = _stage;
+  page = PAGE.Stage;
+}
+export function getStage(): number {
+  return stage;
 }
 
 let currentCoordinates: LatLng | undefined = $state(undefined);
@@ -98,5 +108,5 @@ export function getStages(): Stage[] {
 
 export function loadTrip(user: string, tripId: string) {
   setTripId(tripId);
-  getTripData(user, tripId).then((trip: Trip) => setTrip(trip));
+  loadTripData(user, tripId).then((trip: Trip) => setTrip(trip));
 }

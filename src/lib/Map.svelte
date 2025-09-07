@@ -18,9 +18,8 @@
     getTrip,
     getUser,
     setCurrentCoordinates,
+    setStage,
   } from './store.svelte';
-
-  let { clickStage } = $props();
 
   let mapObj: Map;
   let layer: GeoJSON | undefined;
@@ -73,7 +72,7 @@
     } else {
       mapObj.setView(getStages()[0].coordinates, 10);
     }
-    getStages().forEach((stage) => {
+    getStages().forEach((stage, i) => {
       const marker = circleMarker(stage.coordinates, {
         radius: 5,
         fillOpacity: 0.5,
@@ -83,7 +82,7 @@
         hideLayer = true;
         mapObj.flyToBounds(latLngBounds([marker.getLatLng()]), { duration: 1 });
         mapObj.once('moveend', () => (hideLayer = false));
-        clickStage(stage);
+        setStage(i);
       });
     });
   });

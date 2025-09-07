@@ -1,8 +1,10 @@
 import type { Feature, FeatureCollection } from 'geojson';
-import { loadTripData } from './github';
+import { deletePicture, deleteRepository, deleteTripData, loadTripData, storePicture, storeTripData } from './github';
 import type { LatLng } from 'leaflet';
 
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token';
+export const CLIENT_ID = 'Ov23lieVbXnlw4xgyzT9';
+export const REDIRECT = 'http://localhost:5173';
 
 export interface Stage {
   coordinates: LatLng;
@@ -43,6 +45,7 @@ export enum PAGE {
   Home,
   Trip,
   Stage,
+  Delete,
 }
 let page: PAGE = $state(PAGE.Home);
 export function setPage(_page: PAGE) {
@@ -80,8 +83,50 @@ export function setTrip(_trip: Trip) {
 export function getTrip(): Trip {
   return trip;
 }
-export function addTripStage(stage: Stage) {
+export function addTripStage(stage: Stage, files: FileList | undefined) {
+  stage.pictures = files ? Array.from(files).map((f) => f.name) : undefined;
   trip = { ...trip, stages: [...trip.stages, stage] };
+  return storeTripData(authUser, tripId, trip).then(() => {
+    if (files) {
+      Array.from(files).forEach((f) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const b64 = (reader.result as string).split('base64,')[1];
+          storePicture(authUser, tripId, f.name, b64).then(() => console.info(`${f.name} stored`));
+        };
+        reader.readAsDataURL(f);
+      });
+    }
+  });
+}
+export function deletePictureFromStage(stageIndex: number, picture: string) {
+  trip = {
+    ...trip,
+    stages: trip.stages.map((stage, i) =>
+      i === stageIndex ? { ...stage, pictures: (stage.pictures || []).filter((f) => f !== picture) } : { ...stage },
+    ),
+  };
+  return deletePicture(authUser, tripId, picture).then(() => storeTripData(authUser, tripId, trip));
+}
+export function deleteStage(stageIndex: number) {
+  const pictures = trip.stages[stageIndex].pictures || [];
+  trip = {
+    ...trip,
+    stages: trip.stages.filter((stage, i) => i !== stageIndex),
+  };
+  return Promise.all([...pictures.map((pic) => deletePicture(authUser, tripId, pic))]).then(() =>
+    storeTripData(authUser, tripId, trip),
+  );
+}
+export function deleteTrip(_tripId: string) {
+  return loadTripData(authUser, _tripId).then((_trip: Trip) => {
+    const pictures = _trip.stages.reduce((all, curr) => [...all, ...(curr.pictures || [])], [] as string[]);
+    Promise.all([...pictures.map((pic) => deletePicture(authUser, _tripId, pic)), deleteTripData(authUser, _tripId)]);
+  });
+}
+
+export function deleteAllData() {
+  return deleteRepository(authUser);
 }
 
 let geometry: FeatureCollection = $derived.by(() => {
@@ -116,5 +161,5 @@ export function getStages(): Stage[] {
 export function loadTrip(user: string, tripId: string) {
   setUser(user);
   setTripId(tripId);
-  loadTripData(user, tripId).then((trip: Trip) => setTrip(trip));
+  loadTripData(user, tripId).then((_trip: Trip) => setTrip(_trip));
 }

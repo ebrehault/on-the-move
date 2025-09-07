@@ -1,6 +1,14 @@
 <script lang="ts">
-  import { getPhotoUrl } from './github';
-  import { getStage, getTrip, getTripId, getUser, type Stage } from './store.svelte';
+  import { getPictureUrl } from './github';
+  import {
+    getStage,
+    getTrip,
+    getTripId,
+    getUser,
+    type Stage,
+    deletePictureFromStage,
+    getAuthUser,
+  } from './store.svelte';
 
   let stage: Stage | undefined = $state();
 
@@ -25,12 +33,19 @@
     <div>{stage.date}</div>
     <div>{stage.description}</div>
     {#if stage.pictures && stage.pictures.length > 0}
-      <div class="photos">
+      <div class="pictures">
         {#each stage.pictures as picture}
-          <img src={getPhotoUrl(getUser(), getTripId(), picture)} />
+          <img src={getPictureUrl(getUser(), getTripId(), picture)} />
+          {#if getAuthUser()}
+            <button onclick={() => deletePictureFromStage(getStage(), picture)}>Delete picture</button>
+          {/if}
         {/each}
       </div>
     {/if}
     <button onclick={copyUrl}>Copy to share URL</button>
   {/if}
 </div>
+
+<style>
+  @import './StageDetail.css';
+</style>

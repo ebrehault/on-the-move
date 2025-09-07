@@ -2,10 +2,13 @@
   import { onMount } from 'svelte';
   import Map from './lib/Map.svelte';
   import Stages from './lib/Stages.svelte';
+  import Delete from './lib/Delete.svelte';
   import StageDetail from './lib/StageDetail.svelte';
   import {
     PAGE,
     TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
+    CLIENT_ID,
+    REDIRECT,
     getAuthUser,
     getPage,
     getStage,
@@ -15,23 +18,26 @@
     setPage,
     setStage,
     setAuthUser,
-    setUser,
   } from './lib/store.svelte';
   import { ACCESS_TOKEN_STORAGE_KEY, getCurrentAuthUser, removeToken } from './lib/github';
   import Home from './lib/Home.svelte';
 
   function parseHash() {
-    const params = location.hash.split('/');
-    if (params.length >= 3) {
-      loadTrip(params[1], params[2]);
-      if (params.length === 3) {
-        setPage(PAGE.Trip);
-      } else {
-        const stage = parseInt(params[3], 10);
-        setStage(stage);
-      }
+    if (location.hash === '#DELETE') {
+      setPage(PAGE.Delete);
     } else {
-      setPage(PAGE.Home);
+      const params = location.hash.split('/');
+      if (params.length >= 3) {
+        loadTrip(params[1], params[2]);
+        if (params.length === 3) {
+          setPage(PAGE.Trip);
+        } else {
+          const stage = parseInt(params[3], 10);
+          setStage(stage);
+        }
+      } else {
+        setPage(PAGE.Home);
+      }
     }
   }
 
@@ -41,7 +47,7 @@
     const token = url.searchParams.get(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER);
     if (token) {
       url.searchParams.delete(TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER);
-      url.searchParams.delete('github');
+      url.searchParams.delete('type');
       history.replaceState(undefined, '', url);
       localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
     }
@@ -82,6 +88,8 @@
 <main>
   {#if getPage() === PAGE.Home}
     <Home />
+  {:else if getPage() === PAGE.Delete}
+    <Delete />
   {:else}
     <Map />
     {#if getPage() === PAGE.Trip}
@@ -93,7 +101,7 @@
   {/if}
   {#if !getAuthUser()}
     <a
-      href="https://github.com/login/oauth/authorize?client_id=Ov23lieVbXnlw4xgyzT9&scope=public_repo,user&redirect_uri=https://auth.abfab.dev/github-callback?destination=http://localhost:5173"
+      href={`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo,user&redirect_uri=https://auth.abfab.dev/github-callback?destination=${REDIRECT}`}
     >
       Login with GitHub
     </a>

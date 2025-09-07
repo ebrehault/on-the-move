@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { createTrip, getTripsList } from './github';
-  import { getAuthUser, loadTrip, PAGE, setPage } from './store.svelte';
+  import { onMount } from 'svelte';
+  import { createTrip, getTripsList, hasRepository } from './github';
+  import { CLIENT_ID, REDIRECT, getAuthUser, loadTrip, PAGE, setPage, deleteTrip } from './store.svelte';
 
   let trips: string[] = $state([]);
   let tripName = $state('');
+  let hasRepo = $state(false);
 
   $effect(() => {
     const user = getAuthUser();
@@ -28,6 +30,10 @@
       createTrip(user, tripName).then((tripId) => showTrip(tripId));
     }
   }
+
+  $effect(() => {
+    hasRepository(getAuthUser()).then((has) => (hasRepo = has));
+  });
 </script>
 
 <h1>Welcome</h1>
@@ -47,6 +53,7 @@
           >
             {trip}
           </a>
+          <button onclick={deleteTrip(trip)}>Delete trip</button>
         </li>
       {/each}
     </ul>
@@ -61,4 +68,13 @@
     />
     <button onclick={addTrip}>Create</button>
   </form>
+  {#if hasRepo}
+    <div>
+      If you want to delete all your data stored in this application, you need to <a
+        href={`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo,user,delete_repo&redirect_uri=https://auth.abfab.dev/github-callback?destination=${REDIRECT}/#DELETE`}
+      >
+        re-authenticate to GitHub with adminsitrator access rights
+      </a>
+    </div>
+  {/if}
 {/if}

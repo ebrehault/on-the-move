@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { storeTripData, storePhoto } from './github';
   import {
     addTripStage,
     getCurrentCoordinates,
     getStages,
-    getTrip,
     getTripId,
     getUser,
     getAuthUser,
+    deleteStage,
     setCurrentCoordinates,
     setStage,
   } from './store.svelte';
@@ -25,33 +24,21 @@
     e.preventDefault();
     const coordinates = getCurrentCoordinates();
     if (coordinates) {
-      addTripStage({
-        title,
-        description,
-        date,
-        coordinates,
-        pictures: files ? Array.from(files).map((f) => f.name) : undefined,
+      addTripStage(
+        {
+          title,
+          description,
+          date,
+          coordinates,
+        },
+        files,
+      ).then(() => {
+        title = '';
+        description = '';
+        date = '';
+        files = undefined;
+        setCurrentCoordinates(undefined);
       });
-      storeTripData(getAuthUser(), getTripId(), getTrip())
-        .then(() => {
-          if (files) {
-            Array.from(files).forEach((f) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                const b64 = (reader.result as string).split('base64,')[1];
-                storePhoto(getAuthUser(), getTripId(), f.name, b64).then(() => console.info(`${f.name} stored`));
-              };
-              reader.readAsDataURL(f);
-            });
-          }
-        })
-        .then(() => {
-          title = '';
-          description = '';
-          date = '';
-          files = undefined;
-          setCurrentCoordinates(undefined);
-        });
     }
   }
 </script>
@@ -65,6 +52,9 @@
       >
         {stage.title}
       </a>
+      {#if getAuthUser()}
+        <button onclick={() => deleteStage(i)}>Delete stage</button>
+      {/if}
     </li>
   {/each}
 </ul>
@@ -90,7 +80,7 @@
       <textarea bind:value={description}></textarea>
     </div>
     <div>
-      <label for="files">Photos</label>
+      <label for="files">Pictures</label>
       <input
         type="file"
         multiple

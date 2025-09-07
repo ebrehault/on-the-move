@@ -83,6 +83,7 @@ export function setTrip(_trip: Trip) {
 export function getTrip(): Trip {
   return trip;
 }
+
 export function addTripStage(stage: Stage, files: FileList | undefined) {
   stage.pictures = files ? Array.from(files).map((f) => f.name) : undefined;
   trip = { ...trip, stages: [...trip.stages, stage] };
@@ -99,6 +100,7 @@ export function addTripStage(stage: Stage, files: FileList | undefined) {
     }
   });
 }
+
 export function deletePictureFromStage(stageIndex: number, picture: string) {
   trip = {
     ...trip,
@@ -108,6 +110,7 @@ export function deletePictureFromStage(stageIndex: number, picture: string) {
   };
   return deletePicture(authUser, tripId, picture).then(() => storeTripData(authUser, tripId, trip));
 }
+
 export function deleteStage(stageIndex: number) {
   const pictures = trip.stages[stageIndex].pictures || [];
   trip = {
@@ -118,6 +121,15 @@ export function deleteStage(stageIndex: number) {
     storeTripData(authUser, tripId, trip),
   );
 }
+
+export function updateStage(stageIndex: number, newStageData: Stage) {
+  trip = {
+    ...trip,
+    stages: trip.stages.map((stage, i) => (i !== stageIndex ? { ...stage, ...newStageData } : { ...stage })),
+  };
+  return storeTripData(authUser, tripId, trip);
+}
+
 export function deleteTrip(_tripId: string) {
   return loadTripData(authUser, _tripId).then((_trip: Trip) => {
     const pictures = _trip.stages.reduce((all, curr) => [...all, ...(curr.pictures || [])], [] as string[]);

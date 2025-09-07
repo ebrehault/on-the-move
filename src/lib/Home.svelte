@@ -32,7 +32,9 @@
   }
 
   $effect(() => {
-    hasRepository(getAuthUser()).then((has) => (hasRepo = has));
+    if (getAuthUser()) {
+      hasRepository(getAuthUser()).then((has) => (hasRepo = has));
+    }
   });
 </script>
 

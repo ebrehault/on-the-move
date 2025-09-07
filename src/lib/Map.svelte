@@ -16,7 +16,7 @@
     getGeometry,
     getStages,
     getTrip,
-    getUser,
+    getAuthUser,
     setCurrentCoordinates,
     setStage,
   } from './store.svelte';
@@ -54,7 +54,7 @@
   });
 
   function onMapClick(e: LeafletEvent) {
-    if (getUser()) {
+    if (getAuthUser()) {
       const coordinates = (e as any).latlng as LatLng;
       setCurrentCoordinates(coordinates);
     }

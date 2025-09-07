@@ -1,19 +1,19 @@
 export const ACCESS_TOKEN_STORAGE_KEY = 'GITHUB_TOKEN';
 const DATA_REPOSITORY = 'on-the-move-data';
 
-export function getCurrentUser(): Promise<string> {
+export function getCurrentAuthUser(): Promise<string> {
   return fetchAPI('/user').then((data) => data.login as string);
 }
 
 export function loadTripData(user: string, tripId: string) {
   if (!getToken()) {
-    return fetch(`https://raw.githubusercontent.com/${user}/on-the-move-data/refs/heads/main/${tripId}/trip.json`).then(
-      (res) => res.json(),
-    );
+    return fetch(`https://raw.githubusercontent.com/${user}/on-the-move-data/refs/heads/main/${tripId}/trip.json`)
+      .then((res) => res.text())
+      .then((s) => JSON.parse(decodeURIComponent(s)));
   } else {
     // raw urls have cache, so when authenticated, use the API
     return fetchAPI(`/repos/${user}/on-the-move-data/contents/${tripId}/trip.json`).then((res) =>
-      res.status !== '404' ? JSON.parse(atob(res.content)) : {},
+      res.status !== '404' ? JSON.parse(decodeURIComponent(atob(res.content))) : {},
     );
   }
 }
@@ -38,7 +38,7 @@ export function getTripsList(user: string) {
 }
 
 export function createTrip(user: string, tripName: string) {
-  const tripId = encodeURIComponent(tripName);
+  const tripId = tripName.replace(new RegExp(/[^a-zA-Z0-9-]/g), '-');
   return hasRepository(user)
     .then((hasRepo) => (hasRepo ? true : createRepository()))
     .then(() => storeTripData(user, tripId, { title: tripName, stages: [] }))
@@ -46,7 +46,7 @@ export function createTrip(user: string, tripName: string) {
 }
 
 export function storeTripData(user: string, tripId: string, tripData: any) {
-  const data: any = { message: 'change trip', content: btoa(JSON.stringify(tripData)) };
+  const data: any = { message: 'change trip', content: btoa(encodeURIComponent(JSON.stringify(tripData))) };
   return fetchAPI(`/repos/${user}/on-the-move-data/contents/${tripId}/trip.json`).then((res) => {
     if (res.status !== '404') {
       data.sha = res.sha;
@@ -83,4 +83,8 @@ function fetchAPI<T = any>(path: string, method = 'GET', body?: any): Promise<T>
 
 function getToken() {
   return localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+}
+
+export function removeToken() {
+  return localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
 }

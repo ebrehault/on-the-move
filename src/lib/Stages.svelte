@@ -7,6 +7,7 @@
     getTrip,
     getTripId,
     getUser,
+    getAuthUser,
     setCurrentCoordinates,
     setStage,
   } from './store.svelte';
@@ -31,14 +32,14 @@
         coordinates,
         pictures: files ? Array.from(files).map((f) => f.name) : undefined,
       });
-      storeTripData(getUser(), getTripId(), getTrip())
+      storeTripData(getAuthUser(), getTripId(), getTrip())
         .then(() => {
           if (files) {
             Array.from(files).forEach((f) => {
               const reader = new FileReader();
               reader.onloadend = () => {
                 const b64 = (reader.result as string).split('base64,')[1];
-                storePhoto(getUser(), getTripId(), f.name, b64).then(() => console.info(`${f.name} stored`));
+                storePhoto(getAuthUser(), getTripId(), f.name, b64).then(() => console.info(`${f.name} stored`));
               };
               reader.readAsDataURL(f);
             });
@@ -67,7 +68,7 @@
     </li>
   {/each}
 </ul>
-{#if getUser()}
+{#if getAuthUser()}
   <h2>Add a new stage</h2>
   <form>
     <div>

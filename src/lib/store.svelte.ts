@@ -24,6 +24,13 @@ export function setUser(_user: string) {
 export function getUser(): string {
   return user;
 }
+let authUser: string = $state('');
+export function setAuthUser(_authUser: string) {
+  authUser = _authUser;
+}
+export function getAuthUser(): string {
+  return authUser;
+}
 let tripId: string = $state('');
 export function setTripId(_tripId: string) {
   tripId = _tripId;
@@ -107,6 +114,7 @@ export function getStages(): Stage[] {
 }
 
 export function loadTrip(user: string, tripId: string) {
+  setUser(user);
   setTripId(tripId);
   loadTripData(user, tripId).then((trip: Trip) => setTrip(trip));
 }

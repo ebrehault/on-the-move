@@ -6,6 +6,7 @@
   import {
     PAGE,
     TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
+    getAuthUser,
     getPage,
     getStage,
     getTripId,
@@ -13,10 +14,10 @@
     loadTrip,
     setPage,
     setStage,
-    setTrip,
+    setAuthUser,
     setUser,
   } from './lib/store.svelte';
-  import { ACCESS_TOKEN_STORAGE_KEY, getCurrentUser } from './lib/github';
+  import { ACCESS_TOKEN_STORAGE_KEY, getCurrentAuthUser, removeToken } from './lib/github';
   import Home from './lib/Home.svelte';
 
   function parseHash() {
@@ -45,7 +46,7 @@
       localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
     }
 
-    getCurrentUser().then((user) => setUser(user));
+    getCurrentAuthUser().then((user) => setAuthUser(user));
 
     window.onhashchange = parseHash;
   });
@@ -62,6 +63,11 @@
       }
     }
   });
+
+  function logout() {
+    removeToken();
+    setAuthUser('');
+  }
 </script>
 
 <svelte:head>
@@ -85,13 +91,14 @@
       <StageDetail />
     {/if}
   {/if}
-  {#if !getUser()}
+  {#if !getAuthUser()}
     <a
       href="https://github.com/login/oauth/authorize?client_id=Ov23lieVbXnlw4xgyzT9&scope=public_repo,user&redirect_uri=https://auth.abfab.dev/github-callback?destination=http://localhost:5173"
     >
       Login with GitHub
     </a>
   {:else}
-    Logged as {getUser()}
+    Logged as {getAuthUser()}
+    <button onclick={logout}>Logout</button>
   {/if}
 </main>

@@ -7,9 +7,6 @@
   import {
     PAGE,
     TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
-    CLIENT_ID,
-    REDIRECT,
-    getAuthUser,
     getPage,
     getStage,
     getTripId,
@@ -19,8 +16,9 @@
     setStage,
     setAuthUser,
   } from './lib/store.svelte';
-  import { ACCESS_TOKEN_STORAGE_KEY, getCurrentAuthUser, removeToken } from './lib/github';
+  import { ACCESS_TOKEN_STORAGE_KEY, getCurrentAuthUser } from './lib/github';
   import Home from './lib/Home.svelte';
+  import Footer from './lib/Footer.svelte';
 
   function parseHash() {
     if (location.hash === '#DELETE') {
@@ -69,11 +67,6 @@
       }
     }
   });
-
-  function logout() {
-    removeToken();
-    setAuthUser('');
-  }
 </script>
 
 <svelte:head>
@@ -99,14 +92,5 @@
       <StageDetail />
     {/if}
   {/if}
-  {#if !getAuthUser()}
-    <a
-      href={`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo,user&redirect_uri=https://auth.abfab.dev/github-callback?destination=${REDIRECT}`}
-    >
-      Login with GitHub
-    </a>
-  {:else}
-    Logged as {getAuthUser()}
-    <button onclick={logout}>Logout</button>
-  {/if}
 </main>
+<Footer></Footer>

@@ -3,8 +3,8 @@ import { deletePicture, deleteRepository, deleteTripData, loadTripData, storePic
 import type { LatLng } from 'leaflet';
 
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token';
-export const CLIENT_ID = 'Ov23lieVbXnlw4xgyzT9';
-export const REDIRECT = 'http://localhost:5173';
+export const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
+export const REDIRECT = import.meta.env.VITE_REDIRECT;
 
 export interface Stage {
   coordinates: LatLng;
@@ -125,7 +125,7 @@ export function deleteStage(stageIndex: number) {
 export function updateStage(stageIndex: number, newStageData: Stage) {
   trip = {
     ...trip,
-    stages: trip.stages.map((stage, i) => (i !== stageIndex ? { ...stage, ...newStageData } : { ...stage })),
+    stages: trip.stages.map((stage, i) => (i === stageIndex ? { ...stage, ...newStageData } : { ...stage })),
   };
   return storeTripData(authUser, tripId, trip);
 }

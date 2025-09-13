@@ -20,6 +20,8 @@
     "vite": "^7.1.2"
   },
   "dependencies": {
-    "leaflet": "^1.9.4"
+    "@tailwindcss/vite": "^4.1.13",
+    "leaflet": "^1.9.4",
+    "tailwindcss": "^4.1.13"
   }
 }

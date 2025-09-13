@@ -94,5 +94,11 @@
 ></div>
 
 <style>
-  @import './Map.css';
+  #map {
+    height: 50vh;
+  }
+
+  .hide-layer :global(.leaflet-overlay-pane) {
+    display: none;
+  }
 </style>

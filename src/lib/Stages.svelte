@@ -1,106 +1,104 @@
 <script lang="ts">
   import {
-    addTripStage,
-    getCurrentCoordinates,
     getStages,
     getTripId,
     getUser,
     getAuthUser,
     deleteStage,
-    setCurrentCoordinates,
     setStage,
+    setCurrentCoordinates,
   } from './store.svelte';
+  import { getPictureUrl } from './github';
+  import DeleteButton from './components/DeleteButton.svelte';
+  import StageForm from './StageForm.svelte';
+  import EditButton from './components/EditButton.svelte';
 
-  let title = $state('');
-  let date = $state('');
-  let description = $state('');
-  let files: FileList | undefined = $state();
+  let editMode = $state(false);
+  let stageIndex = $state(-1);
+  let stage: Stage | undefined = $state(undefined);
 
   function goToStage(stage: number) {
     setStage(stage);
   }
 
-  function createStage(e: Event) {
-    e.preventDefault();
-    const coordinates = getCurrentCoordinates();
-    if (coordinates) {
-      addTripStage(
-        {
-          title,
-          description,
-          date,
-          coordinates,
-        },
-        files,
-      ).then(() => {
-        title = '';
-        description = '';
-        date = '';
-        files = undefined;
-        setCurrentCoordinates(undefined);
-      });
-    }
+  function editStage(index: number) {
+    stageIndex = index;
+    stage = getStages()[index];
+    setCurrentCoordinates(stage.coordinates);
+    editMode = true;
+  }
+
+  function closeForm() {
+    editMode = false;
+    stageIndex = -1;
+    stage = undefined;
   }
 </script>
 
-<ul>
-  {#each getStages() as stage, i}
-    <li>
-      <a
-        href={`#/${getUser()}/${getTripId()}/${i}`}
-        onclick={() => goToStage(i)}
-      >
-        {stage.title}
-      </a>
-      {#if getAuthUser()}
-        <button onclick={() => deleteStage(i)}>Delete stage</button>
-      {/if}
-    </li>
-  {/each}
-</ul>
-{#if getAuthUser()}
-  <h2>Add a new stage</h2>
-  <form>
-    <div>
-      <label for="title">Title of the stage</label>
-      <input
-        type="text"
-        bind:value={title}
-      />
+<div class="p-5">
+  {#if !editMode}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+      {#each getStages() as stage, i}
+        <div class="rounded overflow-hidden shadow-lg flex flex-col">
+          <div class="relative">
+            <a
+              href={`#/${getUser()}/${getTripId()}/${i}`}
+              onclick={() => goToStage(i)}
+            >
+              {#if stage.pictures && stage.pictures.length > 0}
+                <div class="w-full aspect-3/2 relative overflow-hidden">
+                  <img
+                    class="absolute w-full"
+                    src={getPictureUrl(getUser(), getTripId(), stage.pictures[0])}
+                    alt={stage.pictures[0]}
+                  />
+                </div>
+              {/if}
+              <div
+                class="hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25"
+              ></div>
+            </a>
+          </div>
+          <div class="px-6 py-4 mb-auto">
+            <div class="flex items-center content-center">
+              <a
+                href={`#/${getUser()}/${getTripId()}/${i}`}
+                onclick={() => goToStage(i)}
+                class="font-medium text-lg hover:text-indigo-600 transition duration-500 ease-in-out inline-block mb-2"
+              >
+                {stage.title}
+              </a>
+            </div>
+            <p class="text-gray-500 text-sm">
+              {stage.description}
+            </p>
+          </div>
+          <div class="px-6 py-3 flex flex-row items-center justify-between bg-gray-100">
+            <span class="py-1 text-xs font-regular text-gray-900 mr-auto">{stage.date}</span>
+            {#if getAuthUser()}
+              <EditButton onclick={() => editStage(i)} />
+              <DeleteButton onclick={() => deleteStage(i)} />
+            {/if}
+          </div>
+        </div>
+      {/each}
     </div>
-    <div>
-      <label for="title">Date</label>
-      <input
-        type="date"
-        bind:value={date}
-      />
-    </div>
-    <div>
-      <label for="description">Description</label>
-      <textarea bind:value={description}></textarea>
-    </div>
-    <div>
-      <label for="files">Pictures</label>
-      <input
-        type="file"
-        multiple
-        bind:files
-        accept="image/*"
-      />
-      {#if files}
-        {#each Array.from(files) as file}
-          <p>{file.name} ({file.size} bytes)</p>
-        {/each}
-      {/if}
-    </div>
-    {#if !getCurrentCoordinates()}
-      <div>Select a position by clicking on the map</div>
+    {#if getAuthUser()}
+      <div class="flex flex-wrap gap-4 mt-3">
+        <button
+          class="cursor-pointer text-white hover:text-blue-600 text-sm bg-blue-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
+          onclick={() => (editMode = true)}
+        >
+          Add stage
+        </button>
+      </div>
     {/if}
-    <button
-      onclick={createStage}
-      disabled={!getCurrentCoordinates() || !title}
-    >
-      Add stage
-    </button>
-  </form>
-{/if}
+  {/if}
+  {#if editMode}
+    <StageForm
+      onclose={closeForm}
+      {stage}
+      {stageIndex}
+    ></StageForm>
+  {/if}
+</div>

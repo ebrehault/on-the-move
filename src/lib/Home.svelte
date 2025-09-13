@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import DeleteButton from './components/DeleteButton.svelte';
   import { createTrip, getTripsList, hasRepository } from './github';
   import { CLIENT_ID, REDIRECT, getAuthUser, loadTrip, PAGE, setPage, deleteTrip } from './store.svelte';
 
@@ -38,45 +38,68 @@
   });
 </script>
 
-<h1>Welcome</h1>
-{#if !getAuthUser()}
-  To create a trip in On The Move, you need to login.
-{:else}
-  {#if trips.length === 0}
-    <h2>Create your first trip</h2>
+<div class="p-4">
+  <h1 class="text-3xl font-bold">On the move</h1>
+  {#if !getAuthUser()}
+    <p class="mt-2">To create a trip, you need to login.</p>
   {:else}
-    <h2>Your trips</h2>
-    <ul>
-      {#each trips as trip}
-        <li>
-          <a
-            href={`#/${getAuthUser()}/${trip}`}
-            onclick={() => showTrip(trip)}
-          >
-            {trip}
-          </a>
-          <button onclick={deleteTrip(trip)}>Delete trip</button>
-        </li>
-      {/each}
-    </ul>
-    <h2>Add a new trip</h2>
+    {#if trips.length === 0}
+      <h2 class="text-xl font-bold mt-2">Create your first trip</h2>
+    {:else}
+      <h2 class="text-xl font-bold mt-2">Your trips</h2>
+      <ul class="bg-white rounded-lg shadow divide-y divide-gray-200 max-w-sm">
+        {#each trips as trip}
+          <li class="px-6 py-4">
+            <div class="flex justify-between">
+              <span class="font-semibold text-lg">
+                <a
+                  href={`#/${getAuthUser()}/${trip}`}
+                  onclick={() => showTrip(trip)}
+                >
+                  {trip}
+                </a>
+              </span>
+              <DeleteButton onclick={deleteTrip(trip)}></DeleteButton>
+            </div>
+          </li>
+        {/each}
+      </ul>
+      <h2 class="text-xl font-bold mt-2">Add a new trip</h2>
+    {/if}
+    <form>
+      <div class="mb-4">
+        <label
+          for="tripName"
+          class="block text-sm font-medium text-gray-700"
+        >
+          Name of the trip
+        </label>
+        <input
+          bind:value={tripName}
+          type="text"
+          id="tripName"
+          name="tripName"
+          placeholder="Enter a name for your trip"
+          class="mt-1 block w-full p-2 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+          required
+        />
+        <button
+          class="mt-2 text-white hover:text-blue-600 text-sm bg-blue-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center disabled:opacity-25"
+          onclick={addTrip}
+        >
+          Create
+        </button>
+      </div>
+    </form>
+    {#if hasRepo}
+      <div>
+        If you want to delete all your data stored in this application, you need to <a
+          class="underline"
+          href={`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo,user,delete_repo&redirect_uri=https://auth.abfab.dev/github-callback?destination=${REDIRECT}/#DELETE`}
+        >
+          re-authenticate to GitHub with administrator access rights.
+        </a>
+      </div>
+    {/if}
   {/if}
-  <form>
-    <label for="tripName">Name of the trip</label>
-    <input
-      type="text"
-      id="tripName"
-      bind:value={tripName}
-    />
-    <button onclick={addTrip}>Create</button>
-  </form>
-  {#if hasRepo}
-    <div>
-      If you want to delete all your data stored in this application, you need to <a
-        href={`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo,user,delete_repo&redirect_uri=https://auth.abfab.dev/github-callback?destination=${REDIRECT}/#DELETE`}
-      >
-        re-authenticate to GitHub with adminsitrator access rights
-      </a>
-    </div>
-  {/if}
-{/if}
+</div>

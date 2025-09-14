@@ -132,7 +132,7 @@ export function updateStage(stageIndex: number, newStageData: Stage) {
 
 export function deleteTrip(_tripId: string) {
   return loadTripData(authUser, _tripId).then((_trip: Trip) => {
-    const pictures = _trip.stages.reduce((all, curr) => [...all, ...(curr.pictures || [])], [] as string[]);
+    const pictures = (_trip.stages || []).reduce((all, curr) => [...all, ...(curr.pictures || [])], [] as string[]);
     Promise.all([...pictures.map((pic) => deletePicture(authUser, _tripId, pic)), deleteTripData(authUser, _tripId)]);
   });
 }

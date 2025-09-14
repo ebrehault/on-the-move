@@ -59,7 +59,7 @@
                   {trip}
                 </a>
               </span>
-              <DeleteButton onclick={deleteTrip(trip)}></DeleteButton>
+              <DeleteButton onclick={() => deleteTrip(trip)}></DeleteButton>
             </div>
           </li>
         {/each}
@@ -98,7 +98,7 @@
     </p>
     <p class="mt-2">
       It is dedicated to travelers who choose <strong>eco-friendly means of transportation</strong>
-       (but anyone can use it; it is free and open source, and it does not collect any user data or track users).
+      (but anyone can use it; it is free and open source, and it does not collect any user data or track users).
     </p>
     <p class="mt-2">
       We believe it is important to share your eco-friendly travel experiences, as this is a good way to multiply the

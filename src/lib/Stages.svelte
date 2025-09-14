@@ -12,6 +12,7 @@
   import DeleteButton from './components/DeleteButton.svelte';
   import StageForm from './StageForm.svelte';
   import EditButton from './components/EditButton.svelte';
+  import ShareButton from './components/ShareButton.svelte';
 
   let editMode = $state(false);
   let stageIndex = $state(-1);
@@ -83,16 +84,17 @@
         </div>
       {/each}
     </div>
-    {#if getAuthUser()}
-      <div class="flex flex-wrap gap-4 mt-3">
+    <div class="flex flex-wrap gap-4 mt-3">
+      {#if getAuthUser()}
         <button
           class="cursor-pointer text-white hover:text-blue-600 text-sm bg-blue-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
           onclick={() => (editMode = true)}
         >
           Add stage
         </button>
-      </div>
-    {/if}
+      {/if}
+      <ShareButton></ShareButton>
+    </div>
   {/if}
   {#if editMode}
     <StageForm

@@ -1,6 +1,7 @@
 <script lang="ts">
   import DeleteButton from './components/DeleteButton.svelte';
   import EditButton from './components/EditButton.svelte';
+  import ShareButton from './components/ShareButton.svelte';
   import { getPictureUrl } from './github';
   import StageForm from './StageForm.svelte';
   import {
@@ -29,10 +30,6 @@
       stage = undefined;
     }
   });
-
-  function copyUrl() {
-    navigator.clipboard.writeText(location.href);
-  }
 
   function showPicture(e: Event, picture: string) {
     e.preventDefault();
@@ -103,12 +100,7 @@
         {/if}
       </div>
       <div>{stage.description}</div>
-      <button
-        class="cursor-pointer text-slate-800 hover:text-blue-600 text-sm bg-gray-100 hover:bg-white rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
-        onclick={copyUrl}
-      >
-        Copy to share URL
-      </button>
+      <ShareButton></ShareButton>
     {/if}
   {/if}
 </div>

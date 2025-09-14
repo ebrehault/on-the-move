@@ -80,7 +80,7 @@
       marker.addTo(mapObj);
       marker.on('click', () => {
         hideLayer = true;
-        mapObj.flyToBounds(latLngBounds([marker.getLatLng()]), { duration: 1 });
+        mapObj.flyToBounds(latLngBounds([marker.getLatLng()]), { duration: 1, maxZoom: 10 });
         mapObj.once('moveend', () => (hideLayer = false));
         setStage(i);
       });

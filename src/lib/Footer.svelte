@@ -8,10 +8,18 @@
   }
 </script>
 
-<footer class="text-sm leading-6 mt-4 px-3">
+<footer class="text-sm leading-6 mt-4 p-4">
   <div class="pt-10 pb-28 border-t border-slate-200 sm:flex justify-between text-slate-500">
     <div class="mb-6 sm:mb-0 sm:flex">
       <p>
+        <a
+          href="/on-the-move/"
+          class="hover:text-slate-500"
+        >
+          On the move
+        </a>
+      </p>
+      <p class="sm:ml-4 sm:pl-4 sm:border-l sm:border-slate-200">
         {#if !getAuthUser()}
           <a
             class="hover:text-slate-900"

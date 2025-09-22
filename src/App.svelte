@@ -1,9 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Map from './lib/Map.svelte';
-  import Stages from './lib/Stages.svelte';
   import Delete from './lib/Delete.svelte';
+  import Footer from './lib/Footer.svelte';
+  import { ACCESS_TOKEN_STORAGE_KEY, getCurrentAuthUser } from './lib/github';
+  import Home from './lib/Home.svelte';
+  import Map from './lib/Map.svelte';
   import StageDetail from './lib/StageDetail.svelte';
+  import Stages from './lib/Stages.svelte';
   import {
     PAGE,
     TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
@@ -12,13 +15,10 @@
     getTripId,
     getUser,
     loadTrip,
+    setAuthUser,
     setPage,
     setStage,
-    setAuthUser,
   } from './lib/store.svelte';
-  import { ACCESS_TOKEN_STORAGE_KEY, getCurrentAuthUser } from './lib/github';
-  import Home from './lib/Home.svelte';
-  import Footer from './lib/Footer.svelte';
 
   function parseHash() {
     if (location.hash === '#DELETE') {
@@ -79,6 +79,9 @@
 </svelte:head>
 
 <main>
+  <header class="bg-indigo-900 h-15 flex items-center px-4">
+    <h1 class="text-3xl text-white">On the move</h1>
+  </header>
   {#if getPage() === PAGE.Home}
     <Home />
   {:else if getPage() === PAGE.Delete}

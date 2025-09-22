@@ -3,12 +3,12 @@
   import { createTrip, getTripsList, hasRepository } from './github';
   import {
     CLIENT_ID,
-    REDIRECT,
+    deleteTrip,
     getAuthUser,
     loadTrip,
     PAGE,
+    REDIRECT,
     setPage,
-    deleteTrip,
   } from './store.svelte';
 
   let trips: string[] = $state([]);
@@ -47,7 +47,6 @@
 </script>
 
 <div class="p-4">
-  <h1 class="text-3xl font-bold">On the move</h1>
   {#if !getAuthUser()}
     <p class="mt-2">To create a trip, you need to login.</p>
   {:else}
@@ -85,11 +84,11 @@
           id="tripName"
           name="tripName"
           placeholder="Enter a name for your trip"
-          class="mt-1 block w-full p-2 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+          class="mt-1 block w-full p-2 rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
           required
         />
         <button
-          class="mt-2 text-white hover:text-blue-600 text-sm bg-blue-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center disabled:opacity-25"
+          class="mt-2 text-white hover:text-indigo-600 text-sm bg-indigo-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center disabled:opacity-25"
           onclick={addTrip}
         >
           Create

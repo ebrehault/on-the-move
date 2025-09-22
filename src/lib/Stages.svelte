@@ -1,18 +1,18 @@
 <script lang="ts">
+  import DeleteButton from './components/DeleteButton.svelte';
+  import EditButton from './components/EditButton.svelte';
+  import ShareButton from './components/ShareButton.svelte';
+  import { getPictureUrl } from './github';
+  import StageForm from './StageForm.svelte';
   import {
+    deleteStage,
+    getAuthUser,
     getStages,
     getTripId,
     getUser,
-    getAuthUser,
-    deleteStage,
-    setStage,
     setCurrentCoordinates,
+    setStage,
   } from './store.svelte';
-  import { getPictureUrl } from './github';
-  import DeleteButton from './components/DeleteButton.svelte';
-  import StageForm from './StageForm.svelte';
-  import EditButton from './components/EditButton.svelte';
-  import ShareButton from './components/ShareButton.svelte';
 
   let editMode = $state(false);
   let stageIndex = $state(-1);
@@ -40,7 +40,7 @@
   {#if !editMode}
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
       {#each getStages() as stage, i}
-        <div class="rounded overflow-hidden shadow-lg flex flex-col">
+        <div class="bg-white rounded overflow-hidden shadow-lg flex flex-col">
           <div class="relative">
             <a
               href={`#/${getUser()}/${getTripId()}/${i}`}
@@ -50,7 +50,11 @@
                 <div class="w-full aspect-3/2 relative overflow-hidden">
                   <img
                     class="absolute w-full"
-                    src={getPictureUrl(getUser(), getTripId(), stage.pictures[0])}
+                    src={getPictureUrl(
+                      getUser(),
+                      getTripId(),
+                      stage.pictures[0],
+                    )}
                     alt={stage.pictures[0]}
                   />
                 </div>
@@ -74,8 +78,12 @@
               {stage.description}
             </p>
           </div>
-          <div class="px-6 py-3 flex flex-row items-center justify-between bg-gray-100">
-            <span class="py-1 text-xs font-regular text-gray-900 mr-auto">{stage.date}</span>
+          <div
+            class="px-6 py-3 flex flex-row items-center justify-between bg-gray-100"
+          >
+            <span class="py-1 text-xs font-regular text-gray-900 mr-auto"
+              >{stage.date}</span
+            >
             {#if getAuthUser()}
               <EditButton onclick={() => editStage(i)} />
               <DeleteButton onclick={() => deleteStage(i)} />
@@ -97,10 +105,6 @@
     </div>
   {/if}
   {#if editMode}
-    <StageForm
-      onclose={closeForm}
-      {stage}
-      {stageIndex}
-    ></StageForm>
+    <StageForm onclose={closeForm} {stage} {stageIndex}></StageForm>
   {/if}
 </div>

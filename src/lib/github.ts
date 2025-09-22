@@ -7,20 +7,29 @@ export function getCurrentAuthUser(): Promise<string> {
 
 export function loadTripData(user: string, tripId: string) {
   if (!getToken()) {
-    return fetch(`https://raw.githubusercontent.com/${user}/${DATA_REPOSITORY}/refs/heads/main/${tripId}/trip.json`)
+    return fetch(
+      `https://raw.githubusercontent.com/${user}/${DATA_REPOSITORY}/refs/heads/main/${tripId}/trip.json`,
+    )
       .then((res) => res.text())
       .then((s) => (s ? JSON.parse(s) : {}));
   } else {
     // raw urls have cache, so when authenticated, use the API
-    return fetchAPI(`/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/trip.json`).then((res) => {
+    return fetchAPI(
+      `/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/trip.json`,
+    ).then((res) => {
       debugger;
-      return res.status !== '404' && res.content ? JSON.parse(atob(res.content)) : {};
+      return res.status !== '404' && res.content
+        ? JSON.parse(atob(res.content))
+        : {};
     });
   }
 }
 
 export function createRepository() {
-  return fetchAPI('/user/repos', 'POST', { name: DATA_REPOSITORY, public: true });
+  return fetchAPI('/user/repos', 'POST', {
+    name: DATA_REPOSITORY,
+    public: true,
+  });
 }
 
 export function deleteRepository(user: string) {
@@ -28,18 +37,22 @@ export function deleteRepository(user: string) {
 }
 
 export function hasRepository(user: string) {
-  return fetchAPI(`/repos/${user}/${DATA_REPOSITORY}`).then((res) => res.status !== '404');
+  return fetchAPI(`/repos/${user}/${DATA_REPOSITORY}`).then(
+    (res) => res.status !== '404',
+  );
 }
 
 export function getTripsList(user: string) {
-  return fetchAPI(`/repos/${user}/${DATA_REPOSITORY}/contents`).then((res: any) => {
-    if (res.status !== '404') {
-      const folders = res as any[];
-      return (folders || []).map((f) => f.name);
-    } else {
-      return [];
-    }
-  });
+  return fetchAPI(`/repos/${user}/${DATA_REPOSITORY}/contents`).then(
+    (res: any) => {
+      if (res.status !== '404') {
+        const folders = res as any[];
+        return (folders || []).map((f) => f.name);
+      } else {
+        return [];
+      }
+    },
+  );
 }
 
 export function createTrip(user: string, tripName: string) {
@@ -51,12 +64,21 @@ export function createTrip(user: string, tripName: string) {
 }
 
 export function storeTripData(user: string, tripId: string, tripData: any) {
-  const data: any = { message: 'change trip', content: btoa(JSON.stringify(tripData)) };
-  return fetchAPI(`/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/trip.json`).then((res) => {
+  const data: any = {
+    message: 'change trip',
+    content: btoa(JSON.stringify(tripData)),
+  };
+  return fetchAPI(
+    `/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/trip.json`,
+  ).then((res) => {
     if (res.status !== '404') {
       data.sha = res.sha;
     }
-    return fetchAPI(`/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/trip.json`, 'PUT', data);
+    return fetchAPI(
+      `/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/trip.json`,
+      'PUT',
+      data,
+    );
   });
 }
 
@@ -64,9 +86,18 @@ export function getPictureUrl(user: string, tripId: string, filename: string) {
   return `https://raw.githubusercontent.com/${user}/${DATA_REPOSITORY}/refs/heads/main/${tripId}/${filename}`;
 }
 
-export function storePicture(user: string, tripId: string, filename: string, b64image: string) {
+export function storePicture(
+  user: string,
+  tripId: string,
+  filename: string,
+  b64image: string,
+) {
   const data: any = { message: `add ${filename}`, content: b64image };
-  return fetchAPI(`/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/${filename}`, 'PUT', data);
+  return fetchAPI(
+    `/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/${filename}`,
+    'PUT',
+    data,
+  );
 }
 
 export function deleteTripData(user: string, tripId: string) {
@@ -80,10 +111,16 @@ export function deletePicture(user: string, tripId: string, filename: string) {
 
 function deleteFile(user: string, filepath: string) {
   const path = `/repos/${user}/${DATA_REPOSITORY}/contents/${filepath}`;
-  return fetchAPI(path).then((res) => fetchAPI(path, 'DELETE', { sha: res.sha, message: `Delete ${filepath}` }));
+  return fetchAPI(path).then((res) =>
+    fetchAPI(path, 'DELETE', { sha: res.sha, message: `Delete ${filepath}` }),
+  );
 }
 
-function fetchAPI<T = any>(path: string, method = 'GET', body?: any): Promise<T> {
+function fetchAPI<T = any>(
+  path: string,
+  method = 'GET',
+  body?: any,
+): Promise<T> {
   const token = getToken();
   if (!token) {
     throw 'NOT AUTHENTICATED';
@@ -97,7 +134,9 @@ function fetchAPI<T = any>(path: string, method = 'GET', body?: any): Promise<T>
     },
     body: JSON.stringify(body),
   };
-  return fetch(`https://api.github.com${path}`, params).then((res) => res.json() as T);
+  return fetch(`https://api.github.com${path}`, params).then(
+    (res) => res.json() as T,
+  );
 }
 
 function getToken() {

@@ -12,11 +12,11 @@
   } from 'leaflet';
   import { onMount } from 'svelte';
   import {
+    getAuthUser,
     getCurrentCoordinates,
     getGeometry,
     getStages,
     getTrip,
-    getAuthUser,
     setCurrentCoordinates,
     setStage,
   } from './store.svelte';
@@ -29,13 +29,16 @@
 
   onMount(() => {
     mapObj = map('map');
-    tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 20,
-      minZoom: 2,
-    }).addTo(mapObj);
+    tileLayer(
+      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+      {
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20,
+        minZoom: 2,
+      },
+    ).addTo(mapObj);
     mapObj.on('click', onMapClick);
   });
 
@@ -80,7 +83,10 @@
       marker.addTo(mapObj);
       marker.on('click', () => {
         hideLayer = true;
-        mapObj.flyToBounds(latLngBounds([marker.getLatLng()]), { duration: 1, maxZoom: 10 });
+        mapObj.flyToBounds(latLngBounds([marker.getLatLng()]), {
+          duration: 1,
+          maxZoom: 10,
+        });
         mapObj.once('moveend', () => (hideLayer = false));
         setStage(i);
       });
@@ -88,14 +94,17 @@
   });
 </script>
 
-<div
-  id="map"
-  class:hide-layer={hideLayer}
-></div>
+<div id="map" class:hide-layer={hideLayer}></div>
 
 <style>
   #map {
-    height: 50vh;
+    height: 30vh;
+  }
+  @media (min-width: 800px) {
+    #map {
+      height: calc(100dvh - calc(var(--spacing) * 15));
+      width: 40vw;
+    }
   }
 
   .hide-layer :global(.leaflet-overlay-pane) {

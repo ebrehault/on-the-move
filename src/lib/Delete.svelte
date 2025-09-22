@@ -4,7 +4,9 @@
 
 <h1>Good bye</h1>
 <div>
-  Delete all your trip data stored in GitHub <button onclick={deleteAllData}>DELETE</button>
+  Delete all your trip data stored in GitHub <button onclick={deleteAllData}
+    >DELETE</button
+  >
 </div>
 <div>
   Once done, you might want to <a
@@ -13,5 +15,5 @@
   >
     delete your GitHub account
   </a>
-   if you created it only to use this application.
+  if you created it only to use this application.
 </div>

@@ -1,7 +1,15 @@
 <script lang="ts">
   import DeleteButton from './components/DeleteButton.svelte';
   import { createTrip, getTripsList, hasRepository } from './github';
-  import { CLIENT_ID, REDIRECT, getAuthUser, loadTrip, PAGE, setPage, deleteTrip } from './store.svelte';
+  import {
+    CLIENT_ID,
+    deleteTrip,
+    getAuthUser,
+    loadTrip,
+    PAGE,
+    REDIRECT,
+    setPage,
+  } from './store.svelte';
 
   let trips: string[] = $state([]);
   let tripName = $state('');
@@ -39,7 +47,6 @@
 </script>
 
 <div class="p-4">
-  <h1 class="text-3xl font-bold">On the move</h1>
   {#if !getAuthUser()}
     <p class="mt-2">To create a trip, you need to login.</p>
   {:else}
@@ -68,10 +75,7 @@
     {/if}
     <form>
       <div class="mb-4">
-        <label
-          for="tripName"
-          class="block text-sm font-medium text-gray-700"
-        >
+        <label for="tripName" class="block text-sm font-medium text-gray-700">
           Name of the trip
         </label>
         <input
@@ -80,11 +84,11 @@
           id="tripName"
           name="tripName"
           placeholder="Enter a name for your trip"
-          class="mt-1 block w-full p-2 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+          class="mt-1 block w-full p-2 rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
           required
         />
         <button
-          class="mt-2 text-white hover:text-blue-600 text-sm bg-blue-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center disabled:opacity-25"
+          class="mt-2 text-white hover:text-indigo-600 text-sm bg-indigo-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center disabled:opacity-25"
           onclick={addTrip}
         >
           Create
@@ -93,33 +97,45 @@
     </form>
     <h2 class="text-xl font-bold mt-2">About</h2>
     <p class="mt-2">
-      On-The-Move is a web application designed for <strong>travelers who want to share their journey</strong>
-      . It allows them to post the different stages of their trip, including their location and photos.
+      On-The-Move is a web application designed for <strong
+        >travelers who want to share their journey</strong
+      >
+      . It allows them to post the different stages of their trip, including their
+      location and photos.
     </p>
     <p class="mt-2">
-      It is dedicated to travelers who choose <strong>eco-friendly means of transportation</strong>
-      (but anyone can use it; it is free and open source, and it does not collect any user data or track users).
+      It is dedicated to travelers who choose <strong
+        >eco-friendly means of transportation</strong
+      >
+      (but anyone can use it; it is free and open source, and it does not collect
+      any user data or track users).
     </p>
     <p class="mt-2">
-      We believe it is important to share your eco-friendly travel experiences, as this is a good way to multiply the
-      positive impact of your eco-friendly choice. When you spend 3 days on a train instead of 2 hours on a plane, you
-      already significantly reduce your carbon emissions (1 ton, in fact), but this impact can be multiplied if it
-      encourages others to do the same.
+      We believe it is important to share your eco-friendly travel experiences,
+      as this is a good way to multiply the positive impact of your eco-friendly
+      choice. When you spend 3 days on a train instead of 2 hours on a plane,
+      you already significantly reduce your carbon emissions (1 ton, in fact),
+      but this impact can be multiplied if it encourages others to do the same.
     </p>
     <p class="mt-2">
-      When they see your daily posts on On-The-Move, your friends and family may go from thinking, <i>
-        “That's crazy, why would I do that?”
-      </i>
+      When they see your daily posts on On-The-Move, your friends and family may
+      go from thinking, <i> “That's crazy, why would I do that?” </i>
       to
       <i>“Hey, that actually sounds like fun!”</i>
       .
     </p>
-    <p class="mt-2">They may not do it right away, but at least the seed will have been planted, and it will grow.</p>
-    <p class="mt-2"><strong>So go inspire people! And have a nice trip :)</strong></p>
+    <p class="mt-2">
+      They may not do it right away, but at least the seed will have been
+      planted, and it will grow.
+    </p>
+    <p class="mt-2">
+      <strong>So go inspire people! And have a nice trip :)</strong>
+    </p>
     {#if hasRepo}
       <h2 class="text-xl font-bold mt-2">Delete your data</h2>
       <div>
-        If you want to delete all your data stored in this application, you need to <a
+        If you want to delete all your data stored in this application, you need
+        to <a
           class="underline"
           href={`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo,user,delete_repo&redirect_uri=https://auth.abfab.dev/github-callback?destination=${REDIRECT}/#DELETE`}
         >

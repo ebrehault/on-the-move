@@ -12,11 +12,11 @@
   } from 'leaflet';
   import { onMount } from 'svelte';
   import {
+    getAuthUser,
     getCurrentCoordinates,
     getGeometry,
     getStages,
     getTrip,
-    getAuthUser,
     setCurrentCoordinates,
     setStage,
   } from './store.svelte';
@@ -98,7 +98,12 @@
 
 <style>
   #map {
-    height: 50vh;
+    height: 35vh;
+  }
+  @media (min-width: 800px) {
+    #map {
+      height: 50vh;
+    }
   }
 
   .hide-layer :global(.leaflet-overlay-pane) {

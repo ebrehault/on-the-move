@@ -50,7 +50,11 @@
                 <div class="w-full aspect-3/2 relative overflow-hidden">
                   <img
                     class="absolute w-full"
-                    src={getPictureUrl(getUser(), getTripId(), stage.pictures[0])}
+                    src={getPictureUrl(
+                      getUser(),
+                      getTripId(),
+                      stage.pictures[0],
+                    )}
                     alt={stage.pictures[0]}
                   />
                 </div>
@@ -74,8 +78,12 @@
               {stage.description}
             </p>
           </div>
-          <div class="px-6 py-3 flex flex-row items-center justify-between bg-gray-100">
-            <span class="py-1 text-xs font-regular text-gray-900 mr-auto">{stage.date}</span>
+          <div
+            class="px-6 py-3 flex flex-row items-center justify-between bg-gray-100"
+          >
+            <span class="py-1 text-xs font-regular text-gray-900 mr-auto"
+              >{stage.date}</span
+            >
             {#if getAuthUser()}
               <EditButton onclick={() => editStage(i)} />
               <DeleteButton onclick={() => deleteStage(i)} />
@@ -97,10 +105,6 @@
     </div>
   {/if}
   {#if editMode}
-    <StageForm
-      onclose={closeForm}
-      {stage}
-      {stageIndex}
-    ></StageForm>
+    <StageForm onclose={closeForm} {stage} {stageIndex}></StageForm>
   {/if}
 </div>

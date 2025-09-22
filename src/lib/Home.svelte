@@ -1,7 +1,15 @@
 <script lang="ts">
   import DeleteButton from './components/DeleteButton.svelte';
   import { createTrip, getTripsList, hasRepository } from './github';
-  import { CLIENT_ID, REDIRECT, getAuthUser, loadTrip, PAGE, setPage, deleteTrip } from './store.svelte';
+  import {
+    CLIENT_ID,
+    REDIRECT,
+    getAuthUser,
+    loadTrip,
+    PAGE,
+    setPage,
+    deleteTrip,
+  } from './store.svelte';
 
   let trips: string[] = $state([]);
   let tripName = $state('');
@@ -68,10 +76,7 @@
     {/if}
     <form>
       <div class="mb-4">
-        <label
-          for="tripName"
-          class="block text-sm font-medium text-gray-700"
-        >
+        <label for="tripName" class="block text-sm font-medium text-gray-700">
           Name of the trip
         </label>
         <input
@@ -93,33 +98,45 @@
     </form>
     <h2 class="text-xl font-bold mt-2">About</h2>
     <p class="mt-2">
-      On-The-Move is a web application designed for <strong>travelers who want to share their journey</strong>
-      . It allows them to post the different stages of their trip, including their location and photos.
+      On-The-Move is a web application designed for <strong
+        >travelers who want to share their journey</strong
+      >
+      . It allows them to post the different stages of their trip, including their
+      location and photos.
     </p>
     <p class="mt-2">
-      It is dedicated to travelers who choose <strong>eco-friendly means of transportation</strong>
-      (but anyone can use it; it is free and open source, and it does not collect any user data or track users).
+      It is dedicated to travelers who choose <strong
+        >eco-friendly means of transportation</strong
+      >
+      (but anyone can use it; it is free and open source, and it does not collect
+      any user data or track users).
     </p>
     <p class="mt-2">
-      We believe it is important to share your eco-friendly travel experiences, as this is a good way to multiply the
-      positive impact of your eco-friendly choice. When you spend 3 days on a train instead of 2 hours on a plane, you
-      already significantly reduce your carbon emissions (1 ton, in fact), but this impact can be multiplied if it
-      encourages others to do the same.
+      We believe it is important to share your eco-friendly travel experiences,
+      as this is a good way to multiply the positive impact of your eco-friendly
+      choice. When you spend 3 days on a train instead of 2 hours on a plane,
+      you already significantly reduce your carbon emissions (1 ton, in fact),
+      but this impact can be multiplied if it encourages others to do the same.
     </p>
     <p class="mt-2">
-      When they see your daily posts on On-The-Move, your friends and family may go from thinking, <i>
-        “That's crazy, why would I do that?”
-      </i>
+      When they see your daily posts on On-The-Move, your friends and family may
+      go from thinking, <i> “That's crazy, why would I do that?” </i>
       to
       <i>“Hey, that actually sounds like fun!”</i>
       .
     </p>
-    <p class="mt-2">They may not do it right away, but at least the seed will have been planted, and it will grow.</p>
-    <p class="mt-2"><strong>So go inspire people! And have a nice trip :)</strong></p>
+    <p class="mt-2">
+      They may not do it right away, but at least the seed will have been
+      planted, and it will grow.
+    </p>
+    <p class="mt-2">
+      <strong>So go inspire people! And have a nice trip :)</strong>
+    </p>
     {#if hasRepo}
       <h2 class="text-xl font-bold mt-2">Delete your data</h2>
       <div>
-        If you want to delete all your data stored in this application, you need to <a
+        If you want to delete all your data stored in this application, you need
+        to <a
           class="underline"
           href={`https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=public_repo,user,delete_repo&redirect_uri=https://auth.abfab.dev/github-callback?destination=${REDIRECT}/#DELETE`}
         >

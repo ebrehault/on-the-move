@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { addTripStage, getCurrentCoordinates, setCurrentCoordinates, type Stage, updateStage } from './store.svelte';
+  import {
+    addTripStage,
+    getCurrentCoordinates,
+    setCurrentCoordinates,
+    type Stage,
+    updateStage,
+  } from './store.svelte';
 
   let { onclose, stage, stageIndex } = $props();
   let title = $state(stage?.title || '');
@@ -50,14 +56,13 @@
 <form>
   {#if !getCurrentCoordinates()}
     <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700">Select a position by clicking on the map</label>
+      <label class="block text-sm font-medium text-gray-700"
+        >Select a position by clicking on the map</label
+      >
     </div>
   {/if}
   <div class="mb-4">
-    <label
-      for="title"
-      class="block text-sm font-medium text-gray-700"
-    >
+    <label for="title" class="block text-sm font-medium text-gray-700">
       Title
     </label>
     <input
@@ -71,10 +76,7 @@
     />
   </div>
   <div class="mb-4">
-    <label
-      for="date"
-      class="block text-sm font-medium text-gray-700"
-    >
+    <label for="date" class="block text-sm font-medium text-gray-700">
       Date
     </label>
     <input
@@ -86,10 +88,7 @@
     />
   </div>
   <div class="mb-4">
-    <label
-      for="description"
-      class="block text-sm font-medium text-gray-700"
-    >
+    <label for="description" class="block text-sm font-medium text-gray-700">
       Description
     </label>
     <textarea
@@ -101,7 +100,9 @@
   </div>
 
   {#if !stage}
-    <div class="rounded-lg border border-blue-600 bg-gray-100 p-4 shadow-md w-36">
+    <div
+      class="rounded-lg border border-blue-600 bg-gray-100 p-4 shadow-md w-36"
+    >
       <label
         for="upload"
         class="flex flex-col items-center gap-2 cursor-pointer"

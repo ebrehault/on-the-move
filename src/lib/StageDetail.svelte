@@ -47,16 +47,10 @@
 <div class="p-4">
   {#if stage}
     {#if mode === 'edit'}
-      <StageForm
-        onclose={() => (mode = 'read')}
-        {stage}
-        {stageIndex}
+      <StageForm onclose={() => (mode = 'read')} {stage} {stageIndex}
       ></StageForm>
     {:else if mode === 'show-picture'}
-      <a
-        href="#"
-        onclick={closePicture}
-      >
+      <a href="#" onclick={closePicture}>
         <img
           src={getPictureUrl(getUser(), getTripId(), currentPicture)}
           alt={currentPicture}
@@ -65,13 +59,14 @@
       </a>
     {:else}
       {#if stage.pictures && stage.pictures.length > 0}
-        <div class="flex overflow-x-scroll space-x-4 rounded-lg no-scrollbar mb-2.5">
+        <div
+          class="flex overflow-x-scroll space-x-4 rounded-lg no-scrollbar mb-2.5"
+        >
           {#each stage.pictures as picture}
-            <div class="relative flex-shrink-0 w-full md:w-3/4 lg:w-2/3 scroll-ml-6">
-              <a
-                href="#"
-                onclick={(e) => showPicture(e, picture)}
-              >
+            <div
+              class="relative flex-shrink-0 w-full md:w-3/4 lg:w-2/3 scroll-ml-6"
+            >
+              <a href="#" onclick={(e) => showPicture(e, picture)}>
                 <img
                   src={getPictureUrl(getUser(), getTripId(), picture)}
                   alt={picture}
@@ -80,7 +75,9 @@
               </a>
               {#if getAuthUser()}
                 <div class="absolute top-0 right-0 p-1">
-                  <DeleteButton onclick={() => deletePictureFromStage(getStage(), picture)}></DeleteButton>
+                  <DeleteButton
+                    onclick={() => deletePictureFromStage(getStage(), picture)}
+                  ></DeleteButton>
                 </div>
               {/if}
             </div>
@@ -88,7 +85,9 @@
         </div>
       {/if}
 
-      <p class="uppercase font-semibold text-xs mb-1 text-blue-600">{stage.date}</p>
+      <p class="uppercase font-semibold text-xs mb-1 text-blue-600">
+        {stage.date}
+      </p>
       <div class="flex">
         <h1 class="text-3xl font-bold">
           {stage.title}

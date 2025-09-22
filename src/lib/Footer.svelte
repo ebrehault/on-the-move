@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { getAuthUser, setAuthUser, CLIENT_ID, REDIRECT } from './store.svelte';
+  import {
+    getAuthUser,
+    setAuthUser,
+    CLIENT_ID,
+    REDIRECT,
+  } from './store.svelte';
   import { removeToken } from './github.ts';
 
   function logout() {
@@ -9,15 +14,12 @@
 </script>
 
 <footer class="text-sm leading-6 mt-4 p-4">
-  <div class="pt-10 pb-28 border-t border-slate-200 sm:flex justify-between text-slate-500">
+  <div
+    class="pt-10 pb-28 border-t border-slate-200 sm:flex justify-between text-slate-500"
+  >
     <div class="mb-6 sm:mb-0 sm:flex">
       <p>
-        <a
-          href="/on-the-move/"
-          class="hover:text-slate-500"
-        >
-          On the move
-        </a>
+        <a href="/on-the-move/" class="hover:text-slate-500"> On the move </a>
       </p>
       <p class="sm:ml-4 sm:pl-4 sm:border-l sm:border-slate-200">
         {#if !getAuthUser()}
@@ -28,16 +30,12 @@
             Login with GitHub
           </a>
         {:else}
-          <a
-            class="hover:text-slate-900"
-            href="#"
-            onclick={logout}
-          >
-            Logout
-          </a>
+          <a class="hover:text-slate-900" href="#" onclick={logout}> Logout </a>
         {/if}
       </p>
-      <p class="sm:ml-4 sm:pl-4 sm:border-l sm:border-slate-200">Created by Eric with ❤️</p>
+      <p class="sm:ml-4 sm:pl-4 sm:border-l sm:border-slate-200">
+        Created by Eric with ❤️
+      </p>
       <p class="sm:ml-4 sm:pl-4 sm:border-l sm:border-slate-200">GPL-3</p>
       <p class="sm:ml-4 sm:pl-4 sm:border-l sm:border-slate-200">
         <a
@@ -46,11 +44,7 @@
           class="hover:text-slate-500"
         >
           <span class="sr-only">GitHub</span>
-          <svg
-            width="25"
-            height="24"
-            fill="currentColor"
-          >
+          <svg width="25" height="24" fill="currentColor">
             <path
               fill-rule="evenodd"
               clip-rule="evenodd"

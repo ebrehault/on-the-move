@@ -30,7 +30,8 @@
         if (params.length === 3) {
           setPage(PAGE.Trip);
         } else {
-          const stage = parseInt(params[3], 10);
+          let stage = parseInt(params[3], 10);
+          stage = isNaN(stage) ? -1 : stage;
           setStage(stage);
         }
       } else {

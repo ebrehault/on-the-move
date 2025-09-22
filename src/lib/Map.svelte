@@ -98,11 +98,12 @@
 
 <style>
   #map {
-    height: 35vh;
+    height: 30vh;
   }
   @media (min-width: 800px) {
     #map {
-      height: 50vh;
+      height: calc(100dvh - calc(var(--spacing) * 15));
+      width: 40vw;
     }
   }
 

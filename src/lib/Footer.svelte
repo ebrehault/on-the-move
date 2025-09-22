@@ -1,11 +1,11 @@
 <script lang="ts">
+  import { removeToken } from './github';
   import {
-    getAuthUser,
-    setAuthUser,
     CLIENT_ID,
+    getAuthUser,
     REDIRECT,
+    setAuthUser,
   } from './store.svelte';
-  import { removeToken } from './github.ts';
 
   function logout() {
     removeToken();
@@ -13,9 +13,9 @@
   }
 </script>
 
-<footer class="text-sm leading-6 mt-4 p-4">
+<footer class="text-sm leading-6">
   <div
-    class="pt-10 pb-28 border-t border-slate-200 sm:flex justify-between text-slate-500"
+    class="pt-4 p-4 border-t border-indigo-300 sm:flex justify-between text-slate-500"
   >
     <div class="mb-6 sm:mb-0 sm:flex">
       <p>

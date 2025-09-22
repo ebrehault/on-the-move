@@ -1,18 +1,18 @@
 <script lang="ts">
+  import DeleteButton from './components/DeleteButton.svelte';
+  import EditButton from './components/EditButton.svelte';
+  import ShareButton from './components/ShareButton.svelte';
+  import { getPictureUrl } from './github';
+  import StageForm from './StageForm.svelte';
   import {
+    deleteStage,
+    getAuthUser,
     getStages,
     getTripId,
     getUser,
-    getAuthUser,
-    deleteStage,
-    setStage,
     setCurrentCoordinates,
+    setStage,
   } from './store.svelte';
-  import { getPictureUrl } from './github';
-  import DeleteButton from './components/DeleteButton.svelte';
-  import StageForm from './StageForm.svelte';
-  import EditButton from './components/EditButton.svelte';
-  import ShareButton from './components/ShareButton.svelte';
 
   let editMode = $state(false);
   let stageIndex = $state(-1);
@@ -40,7 +40,7 @@
   {#if !editMode}
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
       {#each getStages() as stage, i}
-        <div class="rounded overflow-hidden shadow-lg flex flex-col">
+        <div class="bg-white rounded overflow-hidden shadow-lg flex flex-col">
           <div class="relative">
             <a
               href={`#/${getUser()}/${getTripId()}/${i}`}

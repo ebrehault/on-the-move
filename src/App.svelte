@@ -78,22 +78,33 @@
   />
 </svelte:head>
 
-<main>
-  <header class="bg-indigo-900 h-15 flex items-center px-4">
+<main class="relative bg-indigo-50">
+  <header
+    class="sticky top-0 left-0 right-0 z-1 bg-indigo-900 h-15 flex items-center px-4"
+  >
     <h1 class="text-3xl text-white">On the move</h1>
   </header>
+
   {#if getPage() === PAGE.Home}
     <Home />
   {:else if getPage() === PAGE.Delete}
     <Delete />
   {:else}
-    <Map />
-    {#if getPage() === PAGE.Trip}
-      <Stages />
-    {/if}
-    {#if getPage() === PAGE.Stage}
-      <StageDetail />
-    {/if}
+    <div class="md:flex md:flex-row">
+      <div class="md:flex-grow">
+        <div class="sticky top-15 z-0">
+          <Map />
+        </div>
+      </div>
+      <div>
+        {#if getPage() === PAGE.Trip}
+          <Stages />
+        {/if}
+        {#if getPage() === PAGE.Stage}
+          <StageDetail />
+        {/if}
+      </div>
+    </div>
   {/if}
 </main>
 <Footer></Footer>

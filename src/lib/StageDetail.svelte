@@ -5,14 +5,14 @@
   import { getPictureUrl } from './github';
   import StageForm from './StageForm.svelte';
   import {
+    deletePictureFromStage,
+    getAuthUser,
     getStage,
     getTrip,
     getTripId,
     getUser,
-    type Stage,
-    deletePictureFromStage,
-    getAuthUser,
     setCurrentCoordinates,
+    type Stage,
   } from './store.svelte';
 
   let stage: Stage | undefined = $state();
@@ -85,7 +85,7 @@
         </div>
       {/if}
 
-      <p class="uppercase font-semibold text-xs mb-1 text-blue-600">
+      <p class="uppercase font-semibold text-xs mb-1 text-indigo-600">
         {stage.date}
       </p>
       <div class="flex">
@@ -98,7 +98,7 @@
           </div>
         {/if}
       </div>
-      <div>{stage.description}</div>
+      <div class="mb-4">{stage.description}</div>
       <ShareButton></ShareButton>
     {/if}
   {/if}

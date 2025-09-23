@@ -88,7 +88,7 @@
           required
         />
         <button
-          class="mt-2 text-white hover:text-indigo-600 text-sm bg-indigo-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center disabled:opacity-25"
+          class="mt-2 text-white hover:text-indigo-600 text-sm bg-indigo-600 hover:bg-slate-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center disabled:opacity-25"
           onclick={addTrip}
         >
           Create

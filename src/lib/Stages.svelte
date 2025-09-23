@@ -60,7 +60,7 @@
                 </div>
               {/if}
               <div
-                class="hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25"
+                class="hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-slate-900 opacity-25"
               ></div>
             </a>
           </div>
@@ -79,7 +79,7 @@
             </p>
           </div>
           <div
-            class="px-6 py-3 flex flex-row items-center justify-between bg-gray-100"
+            class="px-6 py-3 flex flex-row items-center justify-between bg-slate-100"
           >
             <span class="py-1 text-xs font-regular text-gray-900 mr-auto"
               >{stage.date}</span
@@ -95,7 +95,7 @@
     <div class="flex flex-wrap gap-4 mt-3">
       {#if getAuthUser()}
         <button
-          class="cursor-pointer text-white hover:text-blue-600 text-sm bg-blue-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
+          class="cursor-pointer text-white hover:text-indigo-600 text-sm bg-indigo-600 hover:bg-slate-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
           onclick={() => (editMode = true)}
         >
           Add stage

@@ -4,7 +4,8 @@
 
 <button
   {onclick}
-  class="cursor-pointer text-slate-800 hover:text-blue-600 text-sm bg-gray-100 hover:bg-white rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
+  aria-label="Delete"
+  class="cursor-pointer text-slate-800 hover:text-indigo-600 text-sm bg-slate-100 hover:bg-white rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
 >
   <span>
     <svg

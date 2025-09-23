@@ -3,7 +3,6 @@
     addTripStage,
     getCurrentCoordinates,
     setCurrentCoordinates,
-    type Stage,
     updateStage,
   } from './store.svelte';
 
@@ -101,7 +100,7 @@
 
   {#if !stage}
     <div
-      class="rounded-lg border border-blue-600 bg-gray-100 p-4 shadow-md w-36"
+      class="rounded-lg border border-blue-600 bg-slate-100 p-4 shadow-md w-36"
     >
       <label
         for="upload"
@@ -134,14 +133,14 @@
     {#if files}
       <ul class="flex flex-col gap-3.5 w-full sm:max-w-md">
         {#each Array.from(files) as file}
-          <li class="w-full bg-gray-100 p-3 rounded-md">{file.name}</li>
+          <li class="w-full bg-slate-100 p-3 rounded-md">{file.name}</li>
         {/each}
       </ul>
     {/if}
   {/if}
   <div class="flex flex-wrap gap-4 mt-3">
     <button
-      class="text-white hover:text-blue-600 text-sm bg-blue-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center disabled:opacity-25"
+      class="text-white hover:text-indigo-600 text-sm bg-indigo-600 hover:bg-slate-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center disabled:opacity-25"
       class:cursor-pointer={!invalidForm}
       onclick={save}
       disabled={invalidForm}
@@ -149,7 +148,7 @@
       Save
     </button>
     <button
-      class="ml-auto cursor-pointer text-white hover:text-blue-600 text-sm bg-blue-600 hover:bg-gray-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
+      class="ml-auto cursor-pointer text-white hover:text-indigo-600 text-sm bg-indigo-600 hover:bg-slate-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
       onclick={closeForm}
     >
       Close

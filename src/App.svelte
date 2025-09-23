@@ -79,7 +79,7 @@
   />
 </svelte:head>
 
-<main class="relative bg-indigo-50">
+<main class="relative bg-slate-50">
   <header
     class="sticky top-0 left-0 right-0 z-1 bg-indigo-900 h-15 flex items-center px-4"
   >

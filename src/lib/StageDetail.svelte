@@ -98,7 +98,7 @@
           </div>
         {/if}
       </div>
-      <div class="mb-4">{stage.description}</div>
+      <div class="my-4 md:my-8">{stage.description}</div>
       <ShareButton></ShareButton>
     {/if}
   {/if}

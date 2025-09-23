@@ -92,12 +92,10 @@
     <Delete />
   {:else}
     <div class="md:flex md:flex-row">
-      <div class="md:flex-grow">
-        <div class="sticky top-15 z-0">
-          <Map />
-        </div>
+      <div class="sticky top-15 z-0">
+        <Map />
       </div>
-      <div>
+      <div class="md:flex-grow">
         {#if getPage() === PAGE.Trip}
           <Stages />
         {/if}

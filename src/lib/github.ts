@@ -19,7 +19,7 @@ export function loadTripData(user: string, tripId: string) {
     ).then((res) => {
       debugger;
       return res.status !== '404' && res.content
-        ? JSON.parse(atob(res.content))
+        ? JSON.parse(b64DecodeUnicode(res.content))
         : {};
     });
   }
@@ -66,7 +66,7 @@ export function createTrip(user: string, tripName: string) {
 export function storeTripData(user: string, tripId: string, tripData: any) {
   const data: any = {
     message: 'change trip',
-    content: btoa(JSON.stringify(tripData)),
+    content: b64EncodeUnicode(JSON.stringify(tripData)),
   };
   return fetchAPI(
     `/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/trip.json`,
@@ -145,4 +145,31 @@ function getToken() {
 
 export function removeToken() {
   return localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+}
+
+function b64EncodeUnicode(str: string) {
+  // first we use encodeURIComponent to get percent-encoded Unicode,
+  // then we convert the percent encodings into raw bytes which
+  // can be fed into btoa.
+  return btoa(
+    encodeURIComponent(str).replace(
+      /%([0-9A-F]{2})/g,
+      function toSolidBytes(match, p1) {
+        const v = '0x' + p1;
+        return String.fromCharCode(v as any as number);
+      },
+    ),
+  );
+}
+
+function b64DecodeUnicode(str: string) {
+  // Going backwards: from bytestream, to percent-encoding, to original string.
+  return decodeURIComponent(
+    atob(str)
+      .split('')
+      .map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join(''),
+  );
 }

@@ -139,9 +139,12 @@ export function deleteStage(stageIndex: number): Promise<boolean> {
     ...trip,
     stages: trip.stages.filter((stage, i) => i !== stageIndex),
   };
-  return Promise.all([
-    ...pictures.map((pic) => deletePicture(authUser, tripId, pic)),
-  ]).then(() => storeTripData(authUser, tripId, trip));
+  return pictures
+    .reduce(
+      (all, pic) => all.then(() => deletePicture(authUser, tripId, pic)),
+      Promise.resolve(true),
+    )
+    .then(() => storeTripData(authUser, tripId, trip));
 }
 
 export function updateStage(

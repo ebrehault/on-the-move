@@ -1,6 +1,7 @@
 <script lang="ts">
   import DeleteButton from './components/DeleteButton.svelte';
   import EditButton from './components/EditButton.svelte';
+  import OverlaySpinner from './components/OverlaySpinner.svelte';
   import ShareButton from './components/ShareButton.svelte';
   import { getPictureUrl } from './github';
   import StageForm from './StageForm.svelte';
@@ -11,12 +12,14 @@
     getTripId,
     getUser,
     setCurrentCoordinates,
+    setNotification,
     setStage,
   } from './store.svelte';
 
   let editMode = $state(false);
   let stageIndex = $state(-1);
   let stage: Stage | undefined = $state(undefined);
+  let deleting = $state(false);
 
   function goToStage(stage: number) {
     setStage(stage);
@@ -34,9 +37,23 @@
     stageIndex = -1;
     stage = undefined;
   }
+
+  function _deleteStage(i: number) {
+    deleting = true;
+    deleteStage(i).then((success) => {
+      deleting = false;
+      setNotification({
+        status: success ? 'SUCCESS' : 'FAILURE',
+        message: success ? 'Stage deleted' : 'Error when deleting the stage',
+      });
+    });
+  }
 </script>
 
-<div class="p-5">
+<div class="p-5 relative">
+  {#if deleting}
+    <OverlaySpinner></OverlaySpinner>
+  {/if}
   {#if !editMode}
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
       {#each getStages() as stage, i}
@@ -86,7 +103,7 @@
             >
             {#if getAuthUser()}
               <EditButton onclick={() => editStage(i)} />
-              <DeleteButton onclick={() => deleteStage(i)} />
+              <DeleteButton onclick={() => _deleteStage(i)} />
             {/if}
           </div>
         </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import DeleteButton from './components/DeleteButton.svelte';
   import EditButton from './components/EditButton.svelte';
+  import OverlaySpinner from './components/OverlaySpinner.svelte';
   import ShareButton from './components/ShareButton.svelte';
   import { getPictureUrl } from './github';
   import StageForm from './StageForm.svelte';
@@ -12,6 +13,7 @@
     getTripId,
     getUser,
     setCurrentCoordinates,
+    setNotification,
     type Stage,
   } from './store.svelte';
 
@@ -19,6 +21,7 @@
   let mode = $state('read');
   let stageIndex = $state(-1);
   let currentPicture = $state('');
+  let deleting = $state(false);
 
   $effect(() => {
     stageIndex = getStage();
@@ -42,9 +45,25 @@
     currentPicture = '';
     mode = 'read';
   }
+
+  function _deletePictureFromStage(picture: string) {
+    deleting = true;
+    deletePictureFromStage(getStage(), picture).then((success) => {
+      deleting = false;
+      setNotification({
+        status: success ? 'SUCCESS' : 'FAILURE',
+        message: success
+          ? 'Picture deleted'
+          : 'Error when deleting the picture',
+      });
+    });
+  }
 </script>
 
-<div class="p-4">
+<div class="p-4 relative">
+  {#if deleting}
+    <OverlaySpinner></OverlaySpinner>
+  {/if}
   {#if stage}
     {#if mode === 'edit'}
       <StageForm onclose={() => (mode = 'read')} {stage} {stageIndex}
@@ -75,8 +94,7 @@
               </a>
               {#if getAuthUser()}
                 <div class="absolute top-0 right-0 p-1">
-                  <DeleteButton
-                    onclick={() => deletePictureFromStage(getStage(), picture)}
+                  <DeleteButton onclick={() => _deletePictureFromStage(picture)}
                   ></DeleteButton>
                 </div>
               {/if}

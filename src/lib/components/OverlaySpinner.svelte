@@ -1,4 +1,4 @@
-<div class="size-full absolute flex bg-white opacity-50">
+<div class="size-full absolute flex bg-white opacity-50 z-10000">
   <div class="m-auto">
     <svg
       width="48"

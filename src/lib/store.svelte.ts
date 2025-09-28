@@ -94,20 +94,7 @@ export function getTrip(): Trip {
 export function addTripStage(stage: Stage, files: FileList | undefined) {
   stage.pictures = files ? Array.from(files).map((f) => f.name) : undefined;
   trip = { ...trip, stages: [...trip.stages, stage] };
-  return storeTripData(authUser, tripId, trip).then(() => {
-    if (files) {
-      Array.from(files).forEach((f) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const b64 = (reader.result as string).split('base64,')[1];
-          storePicture(authUser, tripId, f.name, b64).then(() =>
-            console.info(`${f.name} stored`),
-          );
-        };
-        reader.readAsDataURL(f);
-      });
-    }
-  });
+  return storeTripData(authUser, tripId, trip).then(() => storeFiles(files));
 }
 
 export function deletePictureFromStage(stageIndex: number, picture: string) {
@@ -138,14 +125,25 @@ export function deleteStage(stageIndex: number) {
   ]).then(() => storeTripData(authUser, tripId, trip));
 }
 
-export function updateStage(stageIndex: number, newStageData: Stage) {
+export function updateStage(
+  stageIndex: number,
+  newStageData: Partial<Stage>,
+  files: FileList | undefined,
+) {
+  const newPictures = files ? [...Array.from(files).map((f) => f.name)] : [];
   trip = {
     ...trip,
     stages: trip.stages.map((stage, i) =>
-      i === stageIndex ? { ...stage, ...newStageData } : { ...stage },
+      i === stageIndex
+        ? {
+            ...stage,
+            ...newStageData,
+            pictures: [...(stage.pictures || []), ...newPictures],
+          }
+        : { ...stage },
     ),
   };
-  return storeTripData(authUser, tripId, trip);
+  return storeTripData(authUser, tripId, trip).then(() => storeFiles(files));
 }
 
 export function deleteTrip(_tripId: string) {
@@ -201,4 +199,19 @@ export function loadTrip(user: string, tripId: string) {
   setUser(user);
   setTripId(tripId);
   loadTripData(user, tripId).then((_trip: Trip) => setTrip(_trip));
+}
+
+function storeFiles(files: FileList | undefined) {
+  if (files) {
+    Array.from(files).forEach((f) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const b64 = (reader.result as string).split('base64,')[1];
+        storePicture(authUser, tripId, f.name, b64).then(() =>
+          console.info(`${f.name} stored`),
+        );
+      };
+      reader.readAsDataURL(f);
+    });
+  }
 }

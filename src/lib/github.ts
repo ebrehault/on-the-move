@@ -78,7 +78,13 @@ export function storeTripData(user: string, tripId: string, tripData: any) {
       `/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/trip.json`,
       'PUT',
       data,
-    );
+    ).then((res) => {
+      if (!res.status || res.status.startsWith('2')) {
+        return true;
+      } else {
+        return false;
+      }
+    });
   });
 }
 
@@ -97,7 +103,13 @@ export function storePicture(
     `/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/${filename}`,
     'PUT',
     data,
-  );
+  ).then((res) => {
+    if (!res.status || res.status.startsWith('2')) {
+      return true;
+    } else {
+      return false;
+    }
+  });
 }
 
 export function deleteTripData(user: string, tripId: string) {

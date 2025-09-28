@@ -1,8 +1,10 @@
 <script lang="ts">
+  import OverlaySpinner from './components/OverlaySpinner.svelte';
   import {
     addTripStage,
     getCurrentCoordinates,
     setCurrentCoordinates,
+    setNotification,
     updateStage,
   } from './store.svelte';
 
@@ -12,8 +14,10 @@
   let description = $state(stage?.description || '');
   let files: FileList | undefined = $state();
   let invalidForm = $derived(!getCurrentCoordinates() || !title);
+  let saving = $state(false);
 
   function save(e: Event) {
+    saving = true;
     e.preventDefault();
     const coordinates = getCurrentCoordinates();
     if (coordinates) {
@@ -26,28 +30,43 @@
             coordinates,
           },
           files,
-        ).then(() => {
-          setCurrentCoordinates(undefined);
-          onclose();
-        });
+        ).then((success) => closeForm(success));
       } else {
         updateStage(stageIndex, { title, description, date }, files).then(
-          () => {
-            setCurrentCoordinates(undefined);
-            onclose();
-          },
+          (success) => closeForm(success),
         );
       }
     }
   }
 
-  function closeForm(e: Event) {
-    e.preventDefault();
+  function closeForm(success?: boolean) {
+    saving = false;
+    setCurrentCoordinates(undefined);
+    if (success === true) {
+      setNotification({
+        status: 'SUCCESS',
+        message: 'Stage saved successfully',
+      });
+    }
+    if (success === false) {
+      setNotification({
+        status: 'FAILURE',
+        message: 'Error when saving the step',
+      });
+    }
     onclose();
+  }
+
+  function closeFormButton(e: Event) {
+    e.preventDefault();
+    closeForm();
   }
 </script>
 
-<div class="max-w-150">
+<div class="max-w-150 relative">
+  {#if saving}
+    <OverlaySpinner></OverlaySpinner>
+  {/if}
   <h1 class="text-2xl font-semibold mb-4 text-gray-800">
     {#if !stage}
       Add a new stage
@@ -147,11 +166,15 @@
         onclick={save}
         disabled={invalidForm}
       >
-        Save
+        {#if saving}
+          Saving…
+        {:else}
+          Save
+        {/if}
       </button>
       <button
         class="ml-auto cursor-pointer text-indigo-800 hover:text-indigo-600 text-sm bg-indigo-50 hover:bg-indigo-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
-        onclick={closeForm}
+        onclick={closeFormButton}
       >
         Close
       </button>

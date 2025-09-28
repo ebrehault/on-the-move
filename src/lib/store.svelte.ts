@@ -62,6 +62,19 @@ export function getPage(): PAGE {
   return page;
 }
 
+export interface Notification {
+  status: 'SUCCESS' | 'FAILURE';
+  message: string;
+}
+let notification: Notification | undefined = $state(undefined);
+export function setNotification(_notification?: Notification) {
+  notification = _notification;
+  setTimeout(() => setNotification(), 3000);
+}
+export function getNotification(): Notification | undefined {
+  return notification;
+}
+
 let stage: number = $state(-1);
 export function setStage(_stage: number) {
   stage = _stage;
@@ -91,13 +104,19 @@ export function getTrip(): Trip {
   return trip;
 }
 
-export function addTripStage(stage: Stage, files: FileList | undefined) {
+export function addTripStage(
+  stage: Stage,
+  files: FileList | undefined,
+): Promise<boolean> {
   stage.pictures = files ? Array.from(files).map((f) => f.name) : undefined;
   trip = { ...trip, stages: [...trip.stages, stage] };
   return storeTripData(authUser, tripId, trip).then(() => storeFiles(files));
 }
 
-export function deletePictureFromStage(stageIndex: number, picture: string) {
+export function deletePictureFromStage(
+  stageIndex: number,
+  picture: string,
+): Promise<boolean> {
   trip = {
     ...trip,
     stages: trip.stages.map((stage, i) =>
@@ -114,7 +133,7 @@ export function deletePictureFromStage(stageIndex: number, picture: string) {
   );
 }
 
-export function deleteStage(stageIndex: number) {
+export function deleteStage(stageIndex: number): Promise<boolean> {
   const pictures = trip.stages[stageIndex].pictures || [];
   trip = {
     ...trip,
@@ -129,7 +148,7 @@ export function updateStage(
   stageIndex: number,
   newStageData: Partial<Stage>,
   files: FileList | undefined,
-) {
+): Promise<boolean> {
   const newPictures = files ? [...Array.from(files).map((f) => f.name)] : [];
   trip = {
     ...trip,
@@ -143,7 +162,9 @@ export function updateStage(
         : { ...stage },
     ),
   };
-  return storeTripData(authUser, tripId, trip).then(() => storeFiles(files));
+  return storeTripData(authUser, tripId, trip).then((success) =>
+    storeFiles(files),
+  );
 }
 
 export function deleteTrip(_tripId: string) {
@@ -201,17 +222,31 @@ export function loadTrip(user: string, tripId: string) {
   loadTripData(user, tripId).then((_trip: Trip) => setTrip(_trip));
 }
 
-function storeFiles(files: FileList | undefined) {
-  if (files) {
-    Array.from(files).forEach((f) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const b64 = (reader.result as string).split('base64,')[1];
-        storePicture(authUser, tripId, f.name, b64).then(() =>
-          console.info(`${f.name} stored`),
-        );
-      };
-      reader.readAsDataURL(f);
-    });
-  }
+function storeFiles(files: FileList | undefined): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    if (files) {
+      Array.from(files)
+        .reduce(
+          (all, f) =>
+            all.then(
+              () =>
+                new Promise((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    const b64 = (reader.result as string).split('base64,')[1];
+                    storePicture(authUser, tripId, f.name, b64).then(
+                      resolve,
+                      reject,
+                    );
+                  };
+                  reader.readAsDataURL(f);
+                }),
+            ),
+          Promise.resolve(true),
+        )
+        .then(resolve, reject);
+    } else {
+      resolve(true);
+    }
+  });
 }

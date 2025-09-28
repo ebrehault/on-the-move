@@ -19,6 +19,7 @@
     setPage,
     setStage,
   } from './lib/store.svelte';
+  import Header from './lib/Header.svelte';
 
   function parseHash() {
     if (location.hash === '#DELETE') {
@@ -80,11 +81,7 @@
 </svelte:head>
 
 <main class="relative bg-slate-50">
-  <header
-    class="sticky top-0 left-0 right-0 z-1 bg-indigo-900 h-15 flex items-center px-4"
-  >
-    <h1 class="text-3xl text-white">On the move</h1>
-  </header>
+  <Header></Header>
 
   {#if getPage() === PAGE.Home}
     <Home />

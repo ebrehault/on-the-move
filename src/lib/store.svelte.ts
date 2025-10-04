@@ -183,10 +183,12 @@ export function deleteTrip(_tripId: string) {
       (all, curr) => [...all, ...(curr.pictures || [])],
       [] as string[],
     );
-    Promise.all([
-      ...pictures.map((pic) => deletePicture(authUser, _tripId, pic)),
-      deleteTripData(authUser, _tripId),
-    ]);
+    return pictures
+      .reduce(
+        (all, pic) => all.then(() => deletePicture(authUser, _tripId, pic)),
+        Promise.resolve(true),
+      )
+      .then(() => deleteTripData(authUser, _tripId));
   });
 }
 

@@ -1,5 +1,6 @@
 <script lang="ts">
   import DeleteButton from './components/DeleteButton.svelte';
+  import OverlaySpinner from './components/OverlaySpinner.svelte';
   import { createTrip, getTripsList, hasRepository } from './github';
   import {
     CLIENT_ID,
@@ -8,12 +9,14 @@
     loadTrip,
     PAGE,
     REDIRECT,
+    setNotification,
     setPage,
   } from './store.svelte';
 
   let trips: string[] = $state([]);
   let tripName = $state('');
   let hasRepo = $state(false);
+  let busy = $state(false);
 
   $effect(() => {
     const user = getAuthUser();
@@ -35,7 +38,11 @@
     event.preventDefault();
     const user = getAuthUser();
     if (user) {
-      createTrip(user, tripName).then((tripId) => showTrip(tripId));
+      busy = true;
+      createTrip(user, tripName).then((tripId) => {
+        busy = false;
+        showTrip(tripId);
+      });
     }
   }
 
@@ -44,9 +51,24 @@
       hasRepository(getAuthUser()).then((has) => (hasRepo = has));
     }
   });
+
+  function _deleteTrip(trip: string) {
+    busy = true;
+    deleteTrip(trip).then((success) => {
+      busy = false;
+      setNotification({
+        status: success ? 'SUCCESS' : 'FAILURE',
+        message: success ? 'Trip deleted' : 'Error when deleting the trip',
+      });
+      trips = trips.filter((t) => t !== trip);
+    });
+  }
 </script>
 
 <div class="p-4">
+  {#if busy}
+    <OverlaySpinner></OverlaySpinner>
+  {/if}
   {#if !getAuthUser()}
     <p class="mt-2">To create a trip, you need to login.</p>
   {:else}
@@ -66,7 +88,7 @@
                   {trip}
                 </a>
               </span>
-              <DeleteButton onclick={() => deleteTrip(trip)}></DeleteButton>
+              <DeleteButton onclick={() => _deleteTrip(trip)}></DeleteButton>
             </div>
           </li>
         {/each}

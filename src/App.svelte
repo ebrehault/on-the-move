@@ -28,10 +28,10 @@
     }
 
     getCurrentAuthUser().then((user) => setAuthUser(user));
-
-    window.onhashchange = parseHash;
   });
 </script>
+
+<svelte:window on:hashchange={parseHash} />
 
 <svelte:head>
   <link

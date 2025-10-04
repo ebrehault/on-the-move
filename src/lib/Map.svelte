@@ -1,6 +1,5 @@
 <script lang="ts">
   import {
-    Bounds,
     CircleMarker,
     circleMarker,
     geoJSON,
@@ -11,7 +10,6 @@
     type LeafletEvent,
     type Map,
     map,
-    Marker,
     tileLayer,
   } from 'leaflet';
   import { onMount } from 'svelte';
@@ -30,6 +28,7 @@
 
   let hideLayer = $state(false);
   let currentLocationMarker: any;
+  let userPosition: any;
 
   onMount(() => {
     mapObj = map('map');
@@ -39,7 +38,7 @@
         attribution:
           '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
-        maxZoom: 20,
+        maxZoom: 24,
         minZoom: 2,
       },
     ).addTo(mapObj);
@@ -47,6 +46,7 @@
   });
 
   $effect(() => {
+    displayUserPosition();
     const current = getCurrentCoordinates();
     if (currentLocationMarker) {
       mapObj.removeLayer(currentLocationMarker);
@@ -60,8 +60,13 @@
       if (!isEditMode()) {
         zoomToStage(currentLocationMarker);
       }
-    } else if (layer) {
-      zoomTo(layer.getBounds());
+    } else {
+      if (layer && !isEditMode()) {
+        zoomTo(layer.getBounds());
+      }
+      if (isEditMode()) {
+        mapObj.locate({ setView: true, maxZoom: 22 });
+      }
     }
   });
 
@@ -74,7 +79,7 @@
 
   $effect(() => {
     if (!getTrip()?.stages || getTrip().stages.length === 0) {
-      mapObj.setView([0, 0], 3);
+      mapObj.locate({ setView: true, maxZoom: 22 });
       return;
     }
     const geometry = getGeometry();
@@ -108,6 +113,18 @@
       maxZoom: 10,
     });
     mapObj.once('moveend', () => (hideLayer = false));
+  }
+
+  function displayUserPosition() {
+    if (userPosition) {
+      mapObj.removeLayer(userPosition);
+    }
+    navigator.geolocation.getCurrentPosition((position) => {
+      userPosition = circleMarker(
+        [position.coords.latitude, position.coords.longitude],
+        { stroke: false },
+      ).addTo(mapObj);
+    });
   }
 </script>
 

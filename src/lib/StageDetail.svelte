@@ -72,7 +72,7 @@
         <img
           src={getPictureUrl(getUser(), getTripId(), currentPicture)}
           alt={currentPicture}
-          class="w-full fixed top-0 left-0 z-[100000]"
+          class="object-cover fixed top-0 left-0 z-[100000]"
         />
       </a>
     {:else}

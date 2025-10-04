@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { getNotification } from './store.svelte';
+  import BackButton from './components/BackButton.svelte';
+  import { getNotification, getPage, PAGE } from './store.svelte';
 
   let status = $derived(getNotification()?.status);
   let message = $derived(getNotification()?.message);
@@ -8,9 +9,10 @@
 <header
   class="sticky top-0 left-0 right-0 z-1 bg-indigo-900 text-white h-15 flex items-center px-4"
 >
-  <h1 class="text-3xl">On the move</h1>
-  <div class="ml-auto flex">
-    {#if message}
+  {#if !message}
+    <h1 class="text-3xl">On the move</h1>
+  {:else}
+    <div class="flex">
       {#if status === 'SUCCESS'}
         <svg viewBox="0 0 24 24" class="text-white w-5 h-5 sm:w-5 sm:h-5 mr-3">
           <path
@@ -30,6 +32,11 @@
         </svg>
       {/if}
       {message}
+    </div>
+  {/if}
+  <div class="ml-auto flex items-center">
+    {#if getPage() === PAGE.Stage}
+      <BackButton></BackButton>
     {/if}
   </div>
 </header>

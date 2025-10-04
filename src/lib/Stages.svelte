@@ -4,36 +4,34 @@
   import OverlaySpinner from './components/OverlaySpinner.svelte';
   import ShareButton from './components/ShareButton.svelte';
   import { getPictureUrl } from './github';
+  import { getStageUrl, goToStage } from './navigation.svelte';
   import StageForm from './StageForm.svelte';
   import {
     deleteStage,
     getAuthUser,
+    isEditMode,
     getStages,
     getTripId,
     getUser,
     setCurrentCoordinates,
+    setEditMode,
     setNotification,
-    setStage,
+    type Stage,
   } from './store.svelte';
 
-  let editMode = $state(false);
   let stageIndex = $state(-1);
   let stage: Stage | undefined = $state(undefined);
   let deleting = $state(false);
-
-  function goToStage(stage: number) {
-    setStage(stage);
-  }
 
   function editStage(index: number) {
     stageIndex = index;
     stage = getStages()[index];
     setCurrentCoordinates(stage.coordinates);
-    editMode = true;
+    setEditMode(true);
   }
 
   function closeForm() {
-    editMode = false;
+    setEditMode(false);
     stageIndex = -1;
     stage = undefined;
   }
@@ -54,15 +52,12 @@
   {#if deleting}
     <OverlaySpinner></OverlaySpinner>
   {/if}
-  {#if !editMode}
+  {#if !isEditMode()}
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
       {#each getStages() as stage, i}
         <div class="bg-white rounded overflow-hidden shadow-lg flex flex-col">
           <div class="relative">
-            <a
-              href={`#/${getUser()}/${getTripId()}/${i}`}
-              onclick={() => goToStage(i)}
-            >
+            <a href={getStageUrl(i)}>
               {#if stage.pictures && stage.pictures.length > 0}
                 <div class="w-full aspect-3/2 relative overflow-hidden">
                   <img
@@ -84,7 +79,7 @@
           <div class="px-6 py-4 mb-auto">
             <div class="flex items-center content-center">
               <a
-                href={`#/${getUser()}/${getTripId()}/${i}`}
+                href={getStageUrl(i)}
                 onclick={() => goToStage(i)}
                 class="font-medium text-lg hover:text-indigo-600 transition duration-500 ease-in-out inline-block mb-2"
               >
@@ -113,7 +108,7 @@
       {#if getAuthUser()}
         <button
           class="cursor-pointer text-white hover:text-indigo-600 text-sm bg-indigo-600 hover:bg-slate-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
-          onclick={() => (editMode = true)}
+          onclick={() => setEditMode(true)}
         >
           Add stage
         </button>
@@ -121,7 +116,7 @@
       <ShareButton></ShareButton>
     </div>
   {/if}
-  {#if editMode}
+  {#if isEditMode()}
     <StageForm onclose={closeForm} {stage} {stageIndex}></StageForm>
   {/if}
 </div>

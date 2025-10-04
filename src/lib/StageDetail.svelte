@@ -12,13 +12,14 @@
     getTrip,
     getTripId,
     getUser,
+    isEditMode,
     setCurrentCoordinates,
+    setEditMode,
     setNotification,
     type Stage,
   } from './store.svelte';
 
   let stage: Stage | undefined = $state();
-  let mode = $state('read');
   let stageIndex = $state(-1);
   let currentPicture = $state('');
   let deleting = $state(false);
@@ -37,13 +38,11 @@
   function showPicture(e: Event, picture: string) {
     e.preventDefault();
     currentPicture = picture;
-    mode = 'show-picture';
   }
 
   function closePicture(e: Event) {
     e.preventDefault();
     currentPicture = '';
-    mode = 'read';
   }
 
   function _deletePictureFromStage(picture: string) {
@@ -65,10 +64,10 @@
     <OverlaySpinner></OverlaySpinner>
   {/if}
   {#if stage}
-    {#if mode === 'edit'}
-      <StageForm onclose={() => (mode = 'read')} {stage} {stageIndex}
+    {#if isEditMode()}
+      <StageForm onclose={() => setEditMode(false)} {stage} {stageIndex}
       ></StageForm>
-    {:else if mode === 'show-picture'}
+    {:else if !!currentPicture}
       <a href="#" onclick={closePicture}>
         <img
           src={getPictureUrl(getUser(), getTripId(), currentPicture)}
@@ -112,7 +111,7 @@
         </h1>
         {#if getAuthUser()}
           <div class="ml-auto">
-            <EditButton onclick={() => (mode = 'edit')}></EditButton>
+            <EditButton onclick={() => setEditMode(true)}></EditButton>
           </div>
         {/if}
       </div>

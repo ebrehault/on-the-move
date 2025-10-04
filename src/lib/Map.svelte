@@ -1,25 +1,29 @@
 <script lang="ts">
   import {
+    Bounds,
+    CircleMarker,
     circleMarker,
     geoJSON,
     type GeoJSON,
     LatLng,
+    LatLngBounds,
     latLngBounds,
     type LeafletEvent,
     type Map,
     map,
+    Marker,
     tileLayer,
   } from 'leaflet';
   import { onMount } from 'svelte';
   import {
-    getAuthUser,
     getCurrentCoordinates,
     getGeometry,
     getStages,
     getTrip,
+    isEditMode,
     setCurrentCoordinates,
-    setStage,
   } from './store.svelte';
+  import { goToStage } from './navigation.svelte';
 
   let mapObj: Map;
   let layer: GeoJSON | undefined;
@@ -49,15 +53,20 @@
     }
     if (current) {
       currentLocationMarker = circleMarker(current, {
-        radius: 5,
+        radius: 15,
         fillOpacity: 0.5,
       });
       currentLocationMarker.addTo(mapObj);
+      if (!isEditMode()) {
+        zoomToStage(currentLocationMarker);
+      }
+    } else if (layer) {
+      zoomTo(layer.getBounds());
     }
   });
 
   function onMapClick(e: LeafletEvent) {
-    if (getAuthUser()) {
+    if (isEditMode()) {
       const coordinates = (e as any).latlng as LatLng;
       setCurrentCoordinates(coordinates);
     }
@@ -82,16 +91,24 @@
       });
       marker.addTo(mapObj);
       marker.on('click', () => {
-        hideLayer = true;
-        mapObj.flyToBounds(latLngBounds([marker.getLatLng()]), {
-          duration: 1,
-          maxZoom: 10,
-        });
-        mapObj.once('moveend', () => (hideLayer = false));
-        setStage(i);
+        zoomToStage(marker);
+        goToStage(i);
       });
     });
   });
+
+  function zoomToStage(marker: CircleMarker) {
+    zoomTo(latLngBounds([marker.getLatLng()]));
+  }
+
+  function zoomTo(bounds: LatLngBounds) {
+    hideLayer = true;
+    mapObj.flyToBounds(bounds, {
+      duration: 1,
+      maxZoom: 10,
+    });
+    mapObj.once('moveend', () => (hideLayer = false));
+  }
 </script>
 
 <div id="map" class:hide-layer={hideLayer}></div>

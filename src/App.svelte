@@ -11,35 +11,10 @@
     PAGE,
     TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER,
     getPage,
-    getStage,
-    getTripId,
-    getUser,
-    loadTrip,
     setAuthUser,
-    setPage,
-    setStage,
   } from './lib/store.svelte';
   import Header from './lib/Header.svelte';
-
-  function parseHash() {
-    if (location.hash === '#DELETE') {
-      setPage(PAGE.Delete);
-    } else {
-      const params = location.hash.split('/');
-      if (params.length >= 3) {
-        loadTrip(params[1], params[2]);
-        if (params.length === 3) {
-          setPage(PAGE.Trip);
-        } else {
-          let stage = parseInt(params[3], 10);
-          stage = isNaN(stage) ? -1 : stage;
-          setStage(stage);
-        }
-      } else {
-        setPage(PAGE.Home);
-      }
-    }
-  }
+  import { parseHash } from './lib/navigation.svelte';
 
   onMount(() => {
     parseHash();
@@ -55,19 +30,6 @@
     getCurrentAuthUser().then((user) => setAuthUser(user));
 
     window.onhashchange = parseHash;
-  });
-
-  $effect(() => {
-    const user = getUser();
-    const trip = getTripId();
-    const stage = getStage();
-    if (user && trip) {
-      if (stage === -1) {
-        location.hash = `#/${user}/${trip}`;
-      } else {
-        location.hash = `#/${user}/${trip}/${stage}`;
-      }
-    }
   });
 </script>
 

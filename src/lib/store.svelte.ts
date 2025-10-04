@@ -83,6 +83,13 @@ export function setStage(_stage: number) {
 export function getStage(): number {
   return stage;
 }
+let editMode: boolean = $state(false);
+export function setEditMode(mode: boolean) {
+  editMode = mode;
+}
+export function isEditMode(): boolean {
+  return editMode;
+}
 
 let currentCoordinates: LatLng | undefined = $state(undefined);
 export function setCurrentCoordinates(_currentCoordinates: LatLng | undefined) {

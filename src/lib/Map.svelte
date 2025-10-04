@@ -46,7 +46,6 @@
   });
 
   $effect(() => {
-    displayUserPosition();
     const current = getCurrentCoordinates();
     if (currentLocationMarker) {
       mapObj.removeLayer(currentLocationMarker);
@@ -66,6 +65,7 @@
       }
       if (isEditMode()) {
         mapObj.locate({ setView: true, maxZoom: 22 });
+        displayUserPosition();
       }
     }
   });
@@ -122,7 +122,7 @@
     navigator.geolocation.getCurrentPosition((position) => {
       userPosition = circleMarker(
         [position.coords.latitude, position.coords.longitude],
-        { stroke: false },
+        { stroke: false, radius: 10 },
       ).addTo(mapObj);
     });
   }

@@ -4,6 +4,7 @@
   import OverlaySpinner from './components/OverlaySpinner.svelte';
   import ShareButton from './components/ShareButton.svelte';
   import { getPictureUrl } from './github';
+  import Image from './Image.svelte';
   import StageForm from './StageForm.svelte';
   import {
     deletePictureFromStage,
@@ -69,11 +70,10 @@
       ></StageForm>
     {:else if !!currentPicture}
       <a href="#" onclick={closePicture}>
-        <img
-          src={getPictureUrl(getUser(), getTripId(), currentPicture)}
-          alt={currentPicture}
-          class="object-cover fixed top-0 left-0 z-[100000]"
-        />
+        <Image
+          picture={currentPicture}
+          classes="object-cover fixed top-0 left-0 z-[100000]"
+        ></Image>
       </a>
     {:else}
       {#if stage.pictures && stage.pictures.length > 0}
@@ -85,11 +85,10 @@
               class="relative flex-shrink-0 w-full md:w-3/4 lg:w-2/3 scroll-ml-6"
             >
               <a href="#" onclick={(e) => showPicture(e, picture)}>
-                <img
-                  src={getPictureUrl(getUser(), getTripId(), picture)}
-                  alt={picture}
-                  class="w-full h-[500px] object-cover rounded-lg"
-                />
+                <Image
+                  {picture}
+                  classes="w-full h-[500px] object-cover rounded-lg"
+                ></Image>
               </a>
               {#if getAuthUser()}
                 <div class="absolute top-0 right-0 p-1">

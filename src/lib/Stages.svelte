@@ -1,9 +1,11 @@
 <script lang="ts">
   import DeleteButton from './components/DeleteButton.svelte';
   import EditButton from './components/EditButton.svelte';
+  import ImagePlaceholder from './components/ImagePlaceholder.svelte';
   import OverlaySpinner from './components/OverlaySpinner.svelte';
   import ShareButton from './components/ShareButton.svelte';
   import { getThumbnailUrl } from './github';
+  import Image from './Image.svelte';
   import { getStageUrl, goToStage } from './navigation.svelte';
   import StageForm from './StageForm.svelte';
   import {
@@ -58,19 +60,14 @@
         <div class="bg-white rounded overflow-hidden shadow-lg flex flex-col">
           <div class="relative">
             <a href={getStageUrl(i)}>
-              {#if stage.pictures && stage.pictures.length > 0}
-                <div class="w-full aspect-3/2 relative overflow-hidden">
-                  <img
-                    class="absolute w-full"
-                    src={getThumbnailUrl(
-                      getUser(),
-                      getTripId(),
-                      stage.pictures[0],
-                    )}
-                    alt={stage.pictures[0]}
-                  />
-                </div>
-              {/if}
+              <div class="w-full aspect-3/2 relative overflow-hidden">
+                {#if stage.pictures && stage.pictures.length > 0}
+                  <Image classes="absolute w-full" picture={stage.pictures[0]}
+                  ></Image>
+                {:else}
+                  <ImagePlaceholder></ImagePlaceholder>
+                {/if}
+              </div>
               <div
                 class="hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-slate-900 opacity-25"
               ></div>

@@ -9,7 +9,6 @@ import {
 } from './store.svelte';
 
 export function parseHash() {
-  console.log(location.hash);
   if (location.hash === '#DELETE') {
     setPage(PAGE.Delete);
   } else {

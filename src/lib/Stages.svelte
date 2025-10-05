@@ -3,7 +3,7 @@
   import EditButton from './components/EditButton.svelte';
   import OverlaySpinner from './components/OverlaySpinner.svelte';
   import ShareButton from './components/ShareButton.svelte';
-  import { getPictureUrl } from './github';
+  import { getThumbnailUrl } from './github';
   import { getStageUrl, goToStage } from './navigation.svelte';
   import StageForm from './StageForm.svelte';
   import {
@@ -62,7 +62,7 @@
                 <div class="w-full aspect-3/2 relative overflow-hidden">
                   <img
                     class="absolute w-full"
-                    src={getPictureUrl(
+                    src={getThumbnailUrl(
                       getUser(),
                       getTripId(),
                       stage.pictures[0],

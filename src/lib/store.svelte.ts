@@ -6,6 +6,7 @@ import {
   loadTripData,
   storePicture,
   storeTripData,
+  THUMBNAIL_POSTFIX,
 } from './github';
 import type { LatLng } from 'leaflet';
 
@@ -234,31 +235,66 @@ export function loadTrip(user: string, tripId: string) {
   loadTripData(user, tripId).then((_trip: Trip) => setTrip(_trip));
 }
 
+export function fileToObjectURL(f: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const objectURL = reader.result as string;
+      resolve(objectURL);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(f);
+  });
+}
+
 function storeFiles(files: FileList | undefined): Promise<boolean> {
   return new Promise((resolve, reject) => {
     if (files) {
       Array.from(files)
         .reduce(
           (all, f) =>
-            all.then(
-              () =>
-                new Promise((resolve, reject) => {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    const b64 = (reader.result as string).split('base64,')[1];
-                    storePicture(authUser, tripId, f.name, b64).then(
-                      resolve,
-                      reject,
-                    );
-                  };
-                  reader.readAsDataURL(f);
-                }),
-            ),
+            all
+              .then(() => fileToObjectURL(f))
+              .then((objectURL) =>
+                storePicture(authUser, tripId, f.name, objectURL)
+                  .then(() => resizeImage(objectURL))
+                  .then((thumbnail) =>
+                    storePicture(
+                      authUser,
+                      tripId,
+                      `${f.name}.${THUMBNAIL_POSTFIX}`,
+                      thumbnail,
+                    ),
+                  ),
+              ),
           Promise.resolve(true),
         )
         .then(resolve, reject);
     } else {
       resolve(true);
     }
+  });
+}
+
+export function resizeImage(objectURL: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = function () {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const ratio = Math.min(500 / img.width, 500 / img.height);
+      const newWidth = img.width * ratio;
+      const newHeight = img.height * ratio;
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      if (!ctx) {
+        reject();
+      } else {
+        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+        const dataUrl = canvas.toDataURL('image/jpeg');
+        resolve(canvas.toDataURL('image/jpeg'));
+      }
+    };
+    img.src = objectURL;
   });
 }

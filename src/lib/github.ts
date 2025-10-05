@@ -1,4 +1,5 @@
 export const ACCESS_TOKEN_STORAGE_KEY = 'GITHUB_TOKEN';
+export const THUMBNAIL_POSTFIX = 'thumbnail.jpg';
 const DATA_REPOSITORY = 'on-the-move-data';
 
 export function getCurrentAuthUser(): Promise<string> {
@@ -88,6 +89,14 @@ export function storeTripData(user: string, tripId: string, tripData: any) {
   });
 }
 
+export function getThumbnailUrl(
+  user: string,
+  tripId: string,
+  filename: string,
+) {
+  return `${getPictureUrl(user, tripId, filename)}.${THUMBNAIL_POSTFIX}`;
+}
+
 export function getPictureUrl(user: string, tripId: string, filename: string) {
   return `https://raw.githubusercontent.com/${user}/${DATA_REPOSITORY}/refs/heads/main/${tripId}/${filename}`;
 }
@@ -96,8 +105,9 @@ export function storePicture(
   user: string,
   tripId: string,
   filename: string,
-  b64image: string,
+  objectURL: string,
 ) {
+  const b64image = objectURL.split('base64,')[1];
   const data: any = { message: `add ${filename}`, content: b64image };
   return fetchAPI(
     `/repos/${user}/${DATA_REPOSITORY}/contents/${tripId}/${filename}`,
@@ -118,7 +128,9 @@ export function deleteTripData(user: string, tripId: string) {
 
 export function deletePicture(user: string, tripId: string, filename: string) {
   const path = `${tripId}/${filename}`;
-  return deleteFile(user, path);
+  return deleteFile(user, path).then(() =>
+    deleteFile(user, `${path}.${THUMBNAIL_POSTFIX}`),
+  );
 }
 
 function deleteFile(user: string, filepath: string) {

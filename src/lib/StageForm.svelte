@@ -2,7 +2,9 @@
   import OverlaySpinner from './components/OverlaySpinner.svelte';
   import {
     addTripStage,
+    fileToObjectURL,
     getCurrentCoordinates,
+    resizeImage,
     setCurrentCoordinates,
     setNotification,
     updateStage,
@@ -15,6 +17,17 @@
   let files: FileList | undefined = $state();
   let invalidForm = $derived(!getCurrentCoordinates() || !title);
   let saving = $state(false);
+  let thumbnails: { [picture: string]: string } = $state({});
+
+  $effect(() =>
+    Array.from(files || [])
+      .filter((f) => !thumbnails[f.name])
+      .forEach((f) =>
+        fileToObjectURL(f)
+          .then((objectUrl) => resizeImage(objectUrl))
+          .then((thumb) => (thumbnails[f.name] = thumb)),
+      ),
+  );
 
   function save(e: Event) {
     saving = true;
@@ -154,7 +167,16 @@
     {#if files}
       <ul class="flex flex-col gap-3.5 w-full sm:max-w-md">
         {#each Array.from(files) as file}
-          <li class="w-full bg-slate-100 p-3 rounded-md">{file.name}</li>
+          <li class="w-full bg-slate-100 p-3 rounded-md">
+            {file.name}
+            <div class="w-full aspect-3/2 relative overflow-hidden">
+              <img
+                class="absolute w-full"
+                src={thumbnails[file.name]}
+                alt={file.name}
+              />
+            </div>
+          </li>
         {/each}
       </ul>
     {/if}

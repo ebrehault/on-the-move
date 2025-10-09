@@ -79,7 +79,6 @@
 
   $effect(() => {
     if (!getTrip()?.stages || getTrip().stages.length === 0) {
-      mapObj.locate({ setView: true, maxZoom: 22 });
       return;
     }
     const geometry = getGeometry();

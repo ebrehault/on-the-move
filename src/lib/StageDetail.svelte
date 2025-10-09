@@ -36,6 +36,14 @@
     }
   });
 
+  let shareText = $derived(
+    stage
+      ? stage.description
+        ? `${stage.title}\n\n${stage.description}`
+        : stage.title
+      : '',
+  );
+
   function showPicture(e: Event, picture: string) {
     e.preventDefault();
     currentPicture = picture;
@@ -116,6 +124,9 @@
       </div>
       <div class="my-4 md:my-8">{stage.description}</div>
       <ShareButton></ShareButton>
+      {#if shareText}
+        <ShareButton text={shareText}></ShareButton>
+      {/if}
     {/if}
   {/if}
 </div>

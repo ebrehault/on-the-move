@@ -29,11 +29,6 @@
     }
   });
 
-  function showTrip(trip: string) {
-    loadTrip(getAuthUser(), trip);
-    setPage(PAGE.Trip);
-  }
-
   function addTrip(event: Event) {
     event.preventDefault();
     const user = getAuthUser();
@@ -41,7 +36,7 @@
       busy = true;
       createTrip(user, tripName).then((tripId) => {
         busy = false;
-        showTrip(tripId);
+        location.hash = `#/${user}/${tripId}`;
       });
     }
   }
@@ -81,10 +76,7 @@
           <li class="px-6 py-4">
             <div class="flex justify-between">
               <span class="font-semibold text-lg">
-                <a
-                  href={`#/${getAuthUser()}/${trip}`}
-                  onclick={() => showTrip(trip)}
-                >
+                <a href={`#/${getAuthUser()}/${trip}`}>
                   {trip}
                 </a>
               </span>

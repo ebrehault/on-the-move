@@ -41,6 +41,9 @@ export function setAuthUser(_authUser: string) {
 export function getAuthUser(): string {
   return authUser;
 }
+export function isOwner(): boolean {
+  return authUser === user;
+}
 let tripId: string = $state('');
 export function setTripId(_tripId: string) {
   tripId = _tripId;

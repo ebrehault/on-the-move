@@ -4,21 +4,18 @@
   import ImagePlaceholder from './components/ImagePlaceholder.svelte';
   import OverlaySpinner from './components/OverlaySpinner.svelte';
   import ShareButton from './components/ShareButton.svelte';
-  import { getThumbnailUrl } from './github';
   import Image from './Image.svelte';
   import { getStageUrl, goToStage } from './navigation.svelte';
   import StageForm from './StageForm.svelte';
   import {
     deleteStage,
-    getAuthUser,
     isEditMode,
     getStages,
-    getTripId,
-    getUser,
     setCurrentCoordinates,
     setEditMode,
     setNotification,
     type Stage,
+    isOwner,
   } from './store.svelte';
 
   let stageIndex = $state(-1);
@@ -93,7 +90,7 @@
             <span class="py-1 text-xs font-regular text-gray-900 mr-auto"
               >{stage.date}</span
             >
-            {#if getAuthUser()}
+            {#if isOwner()}
               <EditButton onclick={() => editStage(i)} />
               <DeleteButton onclick={() => _deleteStage(i)} />
             {/if}
@@ -102,7 +99,7 @@
       {/each}
     </div>
     <div class="flex flex-wrap gap-4 mt-3">
-      {#if getAuthUser()}
+      {#if isOwner()}
         <button
           class="cursor-pointer text-white hover:text-indigo-600 text-sm bg-indigo-600 hover:bg-slate-100 rounded-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
           onclick={() => setEditMode(true)}

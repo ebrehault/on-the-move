@@ -3,17 +3,14 @@
   import EditButton from './components/EditButton.svelte';
   import OverlaySpinner from './components/OverlaySpinner.svelte';
   import ShareButton from './components/ShareButton.svelte';
-  import { getPictureUrl } from './github';
   import Image from './Image.svelte';
   import StageForm from './StageForm.svelte';
   import {
     deletePictureFromStage,
-    getAuthUser,
     getStage,
     getTrip,
-    getTripId,
-    getUser,
     isEditMode,
+    isOwner,
     setCurrentCoordinates,
     setEditMode,
     setNotification,
@@ -98,7 +95,7 @@
                   classes="w-full h-[500px] object-cover rounded-lg"
                 ></Image>
               </a>
-              {#if getAuthUser()}
+              {#if isOwner()}
                 <div class="absolute top-0 right-0 p-1">
                   <DeleteButton onclick={() => _deletePictureFromStage(picture)}
                   ></DeleteButton>
@@ -116,7 +113,7 @@
         <h1 class="text-3xl font-bold">
           {stage.title}
         </h1>
-        {#if getAuthUser()}
+        {#if isOwner()}
           <div class="ml-auto">
             <EditButton onclick={() => setEditMode(true)}></EditButton>
           </div>

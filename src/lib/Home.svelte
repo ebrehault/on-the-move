@@ -6,11 +6,8 @@
     CLIENT_ID,
     deleteTrip,
     getAuthUser,
-    loadTrip,
-    PAGE,
     REDIRECT,
     setNotification,
-    setPage,
   } from './store.svelte';
 
   let trips: string[] = $state([]);

@@ -164,6 +164,10 @@
         accept="image/*"
       />
     </div>
+    <div>
+      Note: if your pictures have GPS metadata, the corresponding position will
+      be displayed on the map after saving.
+    </div>
     {#if files}
       <ul class="flex flex-col gap-3.5 w-full sm:max-w-md">
         {#each Array.from(files) as file}

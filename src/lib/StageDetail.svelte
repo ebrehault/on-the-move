@@ -7,11 +7,13 @@
   import StageForm from './StageForm.svelte';
   import {
     deletePictureFromStage,
+    getCurrentPicture,
     getStage,
     getTrip,
     isEditMode,
     isOwner,
     setCurrentCoordinates,
+    setCurrentPicture,
     setEditMode,
     setNotification,
     type Stage,
@@ -19,7 +21,6 @@
 
   let stage: Stage | undefined = $state();
   let stageIndex = $state(-1);
-  let currentPicture = $state('');
   let deleting = $state(false);
 
   $effect(() => {
@@ -43,12 +44,12 @@
 
   function showPicture(e: Event, picture: string) {
     e.preventDefault();
-    currentPicture = picture;
+    setCurrentPicture(picture);
   }
 
   function closePicture(e: Event) {
     e.preventDefault();
-    currentPicture = '';
+    setCurrentPicture('');
   }
 
   function _deletePictureFromStage(picture: string) {
@@ -73,10 +74,10 @@
     {#if isEditMode()}
       <StageForm onclose={() => setEditMode(false)} {stage} {stageIndex}
       ></StageForm>
-    {:else if !!currentPicture}
+    {:else if !!getCurrentPicture()}
       <a href="#" onclick={closePicture}>
         <Image
-          picture={currentPicture}
+          picture={getCurrentPicture()}
           classes="object-cover fixed top-0 left-0 z-[100000]"
         ></Image>
       </a>

@@ -12,7 +12,7 @@ export function parseHash() {
   if (location.hash === '#DELETE') {
     setPage(PAGE.Delete);
   } else {
-    const params = location.hash.split('/');
+    const params = location.hash.split('/').filter((param) => !!param);
     if (params.length >= 3) {
       const user = params[1];
       const trip = params[2];
@@ -22,6 +22,7 @@ export function parseHash() {
       if (params.length === 3) {
         setPage(PAGE.Trip);
         setCurrentCoordinates(undefined);
+        setStage(-1);
       } else {
         let stage = parseInt(params[3], 10);
         stage = isNaN(stage) ? -1 : stage;

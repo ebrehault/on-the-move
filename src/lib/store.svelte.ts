@@ -9,6 +9,7 @@ import {
   THUMBNAIL_POSTFIX,
 } from './github';
 import type { LatLng } from 'leaflet';
+import { getImageGPSPosition } from './image';
 
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token';
 export const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
@@ -18,6 +19,7 @@ export interface Stage {
   coordinates: LatLng;
   title: string;
   pictures?: string[];
+  picture_coordinates?: { [picture: string]: LatLng };
   description?: string;
   date: string;
 }
@@ -82,7 +84,7 @@ export function getNotification(): Notification | undefined {
 let stage: number = $state(-1);
 export function setStage(_stage: number) {
   stage = _stage;
-  page = PAGE.Stage;
+  page = _stage === -1 ? PAGE.Trip : PAGE.Stage;
 }
 export function getStage(): number {
   return stage;
@@ -119,9 +121,17 @@ export function addTripStage(
   stage: Stage,
   files: FileList | undefined,
 ): Promise<boolean> {
-  stage.pictures = files ? Array.from(files).map((f) => f.name) : undefined;
-  trip = { ...trip, stages: [...trip.stages, stage] };
-  return storeTripData(authUser, tripId, trip).then(() => storeFiles(files));
+  return collectPictureData(files).then((data) => {
+    stage.pictures =
+      data?.pictures && data.pictures.length > 0 ? data.pictures : undefined;
+    stage.picture_coordinates =
+      data?.picture_coordinates &&
+      Object.keys(data.picture_coordinates).length > 0
+        ? data.picture_coordinates
+        : undefined;
+    trip = { ...trip, stages: [...trip.stages, stage] };
+    return storeTripData(authUser, tripId, trip).then(() => storeFiles(files));
+  });
 }
 
 export function deletePictureFromStage(
@@ -135,6 +145,10 @@ export function deletePictureFromStage(
         ? {
             ...stage,
             pictures: (stage.pictures || []).filter((f) => f !== picture),
+            picture_coordinates: {
+              ...(stage.picture_coordinates || {}),
+              [picture]: undefined,
+            },
           }
         : { ...stage },
     ),
@@ -163,22 +177,34 @@ export function updateStage(
   newStageData: Partial<Stage>,
   files: FileList | undefined,
 ): Promise<boolean> {
-  const newPictures = files ? [...Array.from(files).map((f) => f.name)] : [];
-  trip = {
-    ...trip,
-    stages: trip.stages.map((stage, i) =>
-      i === stageIndex
-        ? {
-            ...stage,
-            ...newStageData,
-            pictures: [...(stage.pictures || []), ...newPictures],
-          }
-        : { ...stage },
-    ),
-  };
-  return storeTripData(authUser, tripId, trip).then((success) =>
-    storeFiles(files),
-  );
+  return collectPictureData(files)
+    .then((data) => {
+      const newPictures =
+        data?.pictures && data.pictures.length > 0 ? data.pictures : [];
+      const newPicturesCoord =
+        data?.picture_coordinates &&
+        Object.keys(data.picture_coordinates).length > 0
+          ? data.picture_coordinates
+          : {};
+      trip = {
+        ...trip,
+        stages: trip.stages.map((stage, i) =>
+          i === stageIndex
+            ? {
+                ...stage,
+                ...newStageData,
+                pictures: [...(stage.pictures || []), ...newPictures],
+                picture_coordinates: {
+                  ...(stage.picture_coordinates || {}),
+                  ...newPicturesCoord,
+                },
+              }
+            : { ...stage },
+        ),
+      };
+      return storeTripData(authUser, tripId, trip);
+    })
+    .then((success) => storeFiles(files));
 }
 
 export function deleteTrip(_tripId: string) {
@@ -230,6 +256,45 @@ export function getGeometry(): FeatureCollection {
 let stages: Stage[] = $derived(trip.stages);
 export function getStages(): Stage[] {
   return stages;
+}
+
+let stageGeometry: FeatureCollection | undefined = $derived.by(() => {
+  if (
+    stage !== -1 &&
+    trip.stages[stage] &&
+    trip.stages[stage].picture_coordinates
+  ) {
+    const features: Feature[] = Object.entries(
+      trip.stages[stage].picture_coordinates || {},
+    ).reduce((all, [picture, coord]) => {
+      const point: Feature = {
+        type: 'Feature',
+        properties: {
+          picture,
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [coord.lng, coord.lat],
+        },
+      };
+      all.push(point);
+      return all;
+    }, [] as Feature[]);
+    return { type: 'FeatureCollection', features };
+  } else {
+    return undefined;
+  }
+});
+export function getStageGeometry(): FeatureCollection | undefined {
+  return stageGeometry;
+}
+
+let _currentPicture = $state('');
+export function setCurrentPicture(picture: string) {
+  _currentPicture = picture;
+}
+export function getCurrentPicture() {
+  return _currentPicture;
 }
 
 export function loadTrip(user: string, tripId: string) {
@@ -300,4 +365,27 @@ export function resizeImage(objectURL: string): Promise<string> {
     };
     img.src = objectURL;
   });
+}
+
+function collectPictureData(files: FileList | undefined) {
+  if (!files) {
+    return Promise.resolve();
+  }
+  const pictures: string[] = [];
+  const picture_coordinates: { [picture: string]: LatLng } = {};
+  return Array.from(files)
+    .reduce(
+      (all, file) =>
+        all.then(() => {
+          const name = file.name;
+          pictures.push(name);
+          return getImageGPSPosition(file).then((coord) => {
+            if (coord) {
+              picture_coordinates[name] = coord;
+            }
+          });
+        }),
+      Promise.resolve(),
+    )
+    .then(() => ({ pictures, picture_coordinates }));
 }

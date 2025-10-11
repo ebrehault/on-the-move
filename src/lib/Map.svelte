@@ -16,15 +16,18 @@
   import {
     getCurrentCoordinates,
     getGeometry,
+    getStageGeometry,
     getStages,
     getTrip,
     isEditMode,
     setCurrentCoordinates,
+    setCurrentPicture,
   } from './store.svelte';
   import { goToStage } from './navigation.svelte';
 
   let mapObj: Map;
   let layer: GeoJSON | undefined;
+  let stageLayer: GeoJSON | undefined;
 
   let hideLayer = $state(false);
   let currentLocationMarker: any;
@@ -99,6 +102,24 @@
         goToStage(i);
       });
     });
+  });
+
+  $effect(() => {
+    if (getStageGeometry()) {
+      stageLayer = geoJSON(getStageGeometry(), {
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            click: () => setCurrentPicture(feature.properties?.picture || ''),
+          });
+        },
+      }).addTo(mapObj);
+      mapObj.fitBounds(stageLayer.getBounds());
+    } else {
+      if (stageLayer) {
+        mapObj.removeLayer(stageLayer);
+        stageLayer = undefined;
+      }
+    }
   });
 
   function zoomToStage(marker: CircleMarker) {

@@ -379,11 +379,13 @@ function collectPictureData(files: FileList | undefined) {
         all.then(() => {
           const name = file.name;
           pictures.push(name);
-          return getImageGPSPosition(file).then((coord) => {
-            if (coord) {
-              picture_coordinates[name] = coord;
-            }
-          });
+          // return getImageGPSPosition(file).then((coord) => {
+          //   if (coord) {
+          //     picture_coordinates[name] = coord;
+          //   }
+          // });
+          // broken on phone, disable temporarily
+          return Promise.resolve();
         }),
       Promise.resolve(),
     )

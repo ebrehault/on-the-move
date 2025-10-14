@@ -93,12 +93,17 @@ function readTags(
       }
     }
   }
-  return gps
-    ? latLng(
-        convertDMSToDD(lat[0], lat[1], lat[2], latRef),
-        convertDMSToDD(lng[0], lng[1], lng[2], lngRef),
-      )
-    : undefined;
+  if (!gps) {
+    return undefined;
+  } else {
+    const latNum = convertDMSToDD(lat[0], lat[1], lat[2], latRef);
+    const lngNum = convertDMSToDD(lng[0], lng[1], lng[2], lngRef);
+    if (isNaN(latNum) || isNaN(lngNum)) {
+      return undefined;
+    } else {
+      return latLng(latNum, lngNum);
+    }
+  }
 }
 
 function readTagValue<T>(
@@ -177,7 +182,7 @@ function convertDMSToDD(
   minutes: number,
   seconds: number,
   direction: Direction,
-) {
+): number {
   let dd = degrees + minutes / 60 + seconds / 3600;
   if (direction == 'S' || direction == 'W') {
     dd = dd * -1;

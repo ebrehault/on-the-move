@@ -1,6 +1,6 @@
 <script lang="ts">
-  import BackButton from './components/BackButton.svelte';
-  import { getNotification, getPage, PAGE } from './store.svelte';
+  import NavButtons from './components/NavButtons.svelte';
+  import { getNotification, getPage, getStage, PAGE } from './store.svelte';
 
   let status = $derived(getNotification()?.status);
   let message = $derived(getNotification()?.message);
@@ -36,7 +36,7 @@
   {/if}
   <div class="ml-auto flex items-center">
     {#if getPage() === PAGE.Stage}
-      <BackButton></BackButton>
+      <NavButtons></NavButtons>
     {/if}
   </div>
 </header>

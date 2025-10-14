@@ -1,4 +1,6 @@
 import {
+  getStage,
+  getTrip,
   getTripId,
   getUser,
   loadTrip,
@@ -45,4 +47,23 @@ export function getStageUrl(stageIndex: number) {
 }
 export function goToStage(stageIndex: number) {
   location.hash = getStageUrl(stageIndex);
+}
+
+let _hasPreviousStage = $derived(getStage() > 0);
+export function hasPreviousStage() {
+  return _hasPreviousStage;
+}
+let previousStageUrl = $derived(
+  _hasPreviousStage ? getStageUrl(getStage() - 1) : '',
+);
+export function getPreviousStageUrl() {
+  return previousStageUrl;
+}
+let _hasNextStage = $derived(getStage() < getTrip().stages.length - 1);
+export function hasNextStage() {
+  return _hasNextStage;
+}
+let nextStageUrl = $derived(_hasNextStage ? getStageUrl(getStage() + 1) : '');
+export function getNextStageUrl() {
+  return nextStageUrl;
 }

@@ -105,8 +105,9 @@
   });
 
   $effect(() => {
-    if (getStageGeometry()) {
-      stageLayer = geoJSON(getStageGeometry(), {
+    const stageGeom = getStageGeometry();
+    if (stageGeom && stageGeom.features.length > 0) {
+      stageLayer = geoJSON(stageGeom, {
         onEachFeature: (feature, layer) => {
           layer.on({
             click: () => setCurrentPicture(feature.properties?.picture || ''),

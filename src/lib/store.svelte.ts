@@ -300,7 +300,10 @@ export function getCurrentPicture() {
 export function loadTrip(user: string, tripId: string) {
   setUser(user);
   setTripId(tripId);
-  loadTripData(user, tripId).then((_trip: Trip) => setTrip(_trip));
+  loadTripData(user, tripId).then((_trip: Trip) => {
+    _trip.stages = _trip.stages.sort((a, b) => a.date.localeCompare(b.date));
+    setTrip(_trip);
+  });
 }
 
 export function fileToObjectURL(f: File): Promise<string> {

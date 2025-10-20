@@ -3,25 +3,30 @@ import { latLng, LatLng } from 'leaflet';
 // from https://github.com/exif-js/exif-js/blob/master/exif.js
 export function getImageGPSPosition(picture: File) {
   return picture.arrayBuffer().then((file) => {
-    let offset = 2;
-    const length = file.byteLength;
-    const dataView = new DataView(file);
-    if (dataView.getUint8(0) != 0xff || dataView.getUint8(1) != 0xd8) {
-      console.log('Not a valid JPEG');
-    }
-    while (offset < length) {
-      if (dataView.getUint8(offset) != 0xff) {
-        return undefined;
+    try {
+      let offset = 2;
+      const length = file.byteLength;
+      const dataView = new DataView(file);
+      if (dataView.getUint8(0) != 0xff || dataView.getUint8(1) != 0xd8) {
+        console.log('Not a valid JPEG');
       }
+      while (offset < length) {
+        if (dataView.getUint8(offset) != 0xff) {
+          return undefined;
+        }
 
-      const marker = dataView.getUint8(offset + 1);
-      if (marker == 225) {
-        return readEXIFData(dataView, offset + 4);
-      } else {
-        offset += 2 + dataView.getUint16(offset + 2);
+        const marker = dataView.getUint8(offset + 1);
+        if (marker == 225) {
+          return readEXIFData(dataView, offset + 4);
+        } else {
+          offset += 2 + dataView.getUint16(offset + 2);
+        }
       }
+      return undefined;
+    } catch {
+      console.error('Error when extracting picture GPS data.');
+      return Promise.resolve(undefined);
     }
-    return undefined;
   });
 }
 

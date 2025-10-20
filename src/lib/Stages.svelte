@@ -16,6 +16,8 @@
     setNotification,
     type Stage,
     isOwner,
+    getTrip,
+    getTotalDistance,
   } from './store.svelte';
 
   let stageIndex = $state(-1);
@@ -52,51 +54,54 @@
     <OverlaySpinner></OverlaySpinner>
   {/if}
   {#if !isEditMode()}
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-      {#each getStages() as stage, i}
-        <div class="bg-white rounded overflow-hidden shadow-lg flex flex-col">
-          <div class="relative">
-            <a href={getStageUrl(i)}>
-              <div class="w-full aspect-3/2 relative overflow-hidden">
-                {#if stage.pictures && stage.pictures.length > 0}
-                  <Image classes="absolute w-full" picture={stage.pictures[0]}
-                  ></Image>
-                {:else}
-                  <ImagePlaceholder></ImagePlaceholder>
-                {/if}
-              </div>
-              <div
-                class="hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-slate-900 opacity-25"
-              ></div>
-            </a>
-          </div>
-          <div class="px-6 py-4 mb-auto">
-            <div class="flex items-center content-center">
-              <a
-                href={getStageUrl(i)}
-                onclick={() => goToStage(i)}
-                class="font-medium text-lg hover:text-indigo-600 transition duration-500 ease-in-out inline-block mb-2"
-              >
-                {stage.title}
+    <div>
+      <h1 class="text-2xl mb-1">{getTrip().title} – {getTotalDistance()} km</h1>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+        {#each getStages() as stage, i}
+          <div class="bg-white rounded overflow-hidden shadow-lg flex flex-col">
+            <div class="relative">
+              <a href={getStageUrl(i)}>
+                <div class="w-full aspect-3/2 relative overflow-hidden">
+                  {#if stage.pictures && stage.pictures.length > 0}
+                    <Image classes="absolute w-full" picture={stage.pictures[0]}
+                    ></Image>
+                  {:else}
+                    <ImagePlaceholder></ImagePlaceholder>
+                  {/if}
+                </div>
+                <div
+                  class="hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-slate-900 opacity-25"
+                ></div>
               </a>
             </div>
-            <p class="text-gray-500 text-sm">
-              {stage.description}
-            </p>
-          </div>
-          <div
-            class="px-6 py-3 flex flex-row items-center justify-between bg-slate-100"
-          >
-            <span class="py-1 text-xs font-regular text-gray-900 mr-auto"
-              >{stage.date}</span
+            <div class="px-6 py-4 mb-auto">
+              <div class="flex items-center content-center">
+                <a
+                  href={getStageUrl(i)}
+                  onclick={() => goToStage(i)}
+                  class="font-medium text-lg hover:text-indigo-600 transition duration-500 ease-in-out inline-block mb-2"
+                >
+                  {stage.title}
+                </a>
+              </div>
+              <p class="text-gray-500 text-sm">
+                {stage.description}
+              </p>
+            </div>
+            <div
+              class="px-6 py-3 flex flex-row items-center justify-between bg-slate-100"
             >
-            {#if isOwner()}
-              <EditButton onclick={() => editStage(i)} />
-              <DeleteButton onclick={() => _deleteStage(i)} />
-            {/if}
+              <span class="py-1 text-xs font-regular text-gray-900 mr-auto"
+                >{stage.date}</span
+              >
+              {#if isOwner()}
+                <EditButton onclick={() => editStage(i)} />
+                <DeleteButton onclick={() => _deleteStage(i)} />
+              {/if}
+            </div>
           </div>
-        </div>
-      {/each}
+        {/each}
+      </div>
     </div>
     <div class="flex flex-wrap gap-4 mt-3">
       {#if isOwner()}

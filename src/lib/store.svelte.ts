@@ -392,3 +392,33 @@ function collectPictureData(files: FileList | undefined) {
     )
     .then(() => ({ pictures, picture_coordinates }));
 }
+
+function distanceBetween2Points(point1: LatLng, point2: LatLng) {
+  const R = 6371e3; // metres
+  const φ1 = (point1.lat * Math.PI) / 180; // φ, λ in radians
+  const φ2 = (point2.lat * Math.PI) / 180;
+  const Δφ = ((point2.lat - point1.lat) * Math.PI) / 180;
+  const Δλ = ((point2.lng - point1.lng) * Math.PI) / 180;
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const d = (R * c) / 1000; // in kilometres
+  return d;
+}
+
+export function getTotalDistance() {
+  const trip = getTrip();
+  const total = trip.stages.reduce(
+    (total, current, i) =>
+      total +
+      (i === 0
+        ? 0
+        : distanceBetween2Points(
+            trip.stages[i - 1].coordinates,
+            current.coordinates,
+          )),
+    0,
+  );
+  return Math.round(total);
+}

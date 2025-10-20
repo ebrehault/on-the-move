@@ -20,6 +20,7 @@
   let stageLayer: L.GeoJSON | undefined;
 
   let hideLayer = $state(false);
+  let currentLocationMarker: L.CircleMarker;
   let userPosition: any;
 
   onMount(() => {
@@ -39,9 +40,17 @@
 
   $effect(() => {
     const current = getCurrentCoordinates();
+    if (currentLocationMarker) {
+      mapObj.removeLayer(currentLocationMarker);
+    }
     if (current) {
+      currentLocationMarker = L.circleMarker(current, {
+        radius: 15,
+        fillOpacity: 0.5,
+      });
+      currentLocationMarker.addTo(mapObj);
       if (!isEditMode()) {
-        zoomToStage(current);
+        zoomToStage(currentLocationMarker.getLatLng());
       }
     } else {
       if (layer && !isEditMode()) {

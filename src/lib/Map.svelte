@@ -58,7 +58,7 @@
       }
       if (isEditMode()) {
         mapObj.locate({ setView: true, maxZoom: 22 });
-        displayUserPosition();
+        setUserPosition();
       }
     }
   });
@@ -168,7 +168,7 @@
     mapObj.once('moveend', () => (hideLayer = false));
   }
 
-  function displayUserPosition() {
+  function setUserPosition() {
     if (userPosition) {
       mapObj.removeLayer(userPosition);
     }
@@ -177,6 +177,9 @@
         [position.coords.latitude, position.coords.longitude],
         { stroke: false, radius: 10 },
       ).addTo(mapObj);
+      setCurrentCoordinates(
+        L.latLng([position.coords.latitude, position.coords.longitude]),
+      );
     });
   }
 </script>

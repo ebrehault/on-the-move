@@ -1,4 +1,4 @@
-import type { Feature, FeatureCollection } from 'geojson';
+import type { Feature, FeatureCollection, Point } from 'geojson';
 import {
   deletePicture,
   deleteRepository,
@@ -8,7 +8,7 @@ import {
   storeTripData,
   THUMBNAIL_POSTFIX,
 } from './github';
-import type { LatLng } from 'leaflet';
+import { type LatLng } from 'leaflet';
 import { getImageGPSPosition } from './image';
 
 export const TOCTOCTOC_ACCESS_TOKEN_URL_PARAMETER = 'access_token';
@@ -226,30 +226,25 @@ export function deleteAllData() {
   return deleteRepository(authUser);
 }
 
-let geometry: FeatureCollection = $derived.by(() => {
-  const features: Feature[] = trip.stages.reduce((all, stage, index) => {
-    if (index > 0) {
-      const line: Feature = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'LineString',
-          coordinates: [
-            [
-              trip.stages[index - 1].coordinates.lng,
-              trip.stages[index - 1].coordinates.lat,
-            ],
-            [stage.coordinates.lng, stage.coordinates.lat],
-          ],
-        },
-      };
-      all.push(line);
-    }
+let geometry: FeatureCollection<Point> = $derived.by(() => {
+  const features: Feature<Point>[] = trip.stages.reduce((all, stage, index) => {
+    const point: Feature<Point> = {
+      type: 'Feature',
+      properties: {
+        index,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [stage.coordinates.lng, stage.coordinates.lat],
+      },
+    };
+    all.push(point);
+
     return all;
-  }, [] as Feature[]);
+  }, [] as Feature<Point>[]);
   return { type: 'FeatureCollection', features };
 });
-export function getGeometry(): FeatureCollection {
+export function getGeometry(): FeatureCollection<Point> {
   return geometry;
 }
 
